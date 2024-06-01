@@ -9,4 +9,4 @@ It is based on Kubuntu and uses KDE's Window manager along with a custom desktop
     <li>Designed to be user friendly</li>
 </ul>
 
-## note: this is a WIP and is not fully finished. Full features are not implemented yet.
+<em>note: this is a WIP and is not fully finished. Full features are not implemented yet.</em>
