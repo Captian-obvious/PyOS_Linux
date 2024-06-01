@@ -5,7 +5,7 @@ It is based on Kubuntu and uses KDE's Window manager along with a custom desktop
 <ul>
     <li>Python-Centered and Lightweight</li>
     <li>Highly customizable</li>
-    <li>Versitile Application framework/built-in Python Interpreter named PyEXE</li>
+    <li>Versatile Application framework/built-in Python Interpreter named PyEXE</li>
     <li>Designed to be user friendly</li>
 </ul>
 
