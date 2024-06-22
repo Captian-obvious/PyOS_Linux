@@ -9,5 +9,11 @@ It is based on Kubuntu and uses KDE's Window manager along with a custom desktop
     <li>Versatile Application framework/built-in Python Interpreter named PyEXE</li>
     <li>Designed to be user friendly</li>
 </ul>
+<h2>Minimum System</h2>
+<ul>
+    <li>At least 1 GB of ram</li>
+    <li>64-bit instruction support</li>
+    <li>At least 10GB storage</li>
+</ul>
 
 <em>note: this is a WIP and is not fully finished. Full features are not implemented yet.</em>
