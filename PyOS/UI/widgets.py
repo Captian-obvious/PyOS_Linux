@@ -143,6 +143,34 @@ class UI:
             ##endif
         ##end
     ##end
+    class Toplevel(tk.Toplevel):
+        def __init__(self,master=None,screenName=None,width=400,height=300,title="Window",icon=None,**kwargs):
+            tk.Toplevel.__init__(self,master=master,**kwargs);
+            self.geometry(f"{width}x{height}");
+            self.title(title);
+            if (icon!=None):
+                self.iconphoto(True,tk.PhotoImage(file=icon));
+            ##endif
+        ##end
+        def setIcon(self,path):
+            self.iconphoto(True,tk.PhotoImage(file=path));
+        ##end
+        def setTitle(self,title):
+            self.title(title);
+        ##end
+        def setSize(self,width=400,height=300):
+            self.geometry(f"{width}x{height}");
+        ##end
+        def setAttribute(self,attribute,value):
+            if (attribute=='fullscreen' or attribute=='isfullscreen'):
+                self.attributes('-fullscreen',value);
+            elif (attribute=='resizeable' or attribute=='isresizeable'):
+                self.resizable(value[0],value[1]);
+            else:
+                self.attributes(attribute,value);
+            ##endif
+        ##end
+    ##end
     class Label(tk.Label):
         def __init__(self,master,cnf={},*a,**kwargs):
             tk.Label.__init__(self,master,cnf,*a,**kwargs);
