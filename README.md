@@ -1,3 +1,4 @@
+<img src="./Logo.png"></img>
 # PyOS_Linux
 PyOS Linux (also known as PyNux) is a python-centered linux distribution designed to be lightweight, performant, and is written almost entirely in python..
 
