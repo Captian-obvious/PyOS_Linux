@@ -2,7 +2,7 @@ from . import UI as uiw;
 from . import LinuxUtils as linux;
 from . import Filesystem as fs;
 from . import libCommon as common;
-from .MainExe import MaterialSpinner,shutdown;
+from .MainExe import MaterialSpinner,BootupSpinner,shutdown;
 import shutil as sh;
 thisdir=linux.os.path.dirname(linux.os.path.realpath(__file__));
 global mainwin,desk_init;
@@ -263,7 +263,8 @@ def install(config):
     uiw.print_info('Installing...');
     InstallMessage=ui.Label(mainwin,text='...',font=('Ubuntu',15),fg="#fff",bg="#aaa",height=1);
     InstallMessage.pack(expand=1,fill=ui.X,anchor='s');
-    BootSpinner=MaterialSpinner(mainwin,canvas_size=96,animation_length=5.2,arc_width=6,arc_color=("#fff","#fff"),bg_color="#aaa");
+    #oldlen=5.2;
+    BootSpinner=BootupSpinner(mainwin,canvas_size=96,animation_length=3.2,arc_width=6,arc_color=("#fff","#fff"),bg_color="#aaa");
     BootSpinner.place(relx=.5,rely=.9,anchor=ui.S);
     mainwin.update();
     mainwin.bootIcon=icon=ui.PhotoImage(file=thisdir+'/assets/BootLogo.png');
@@ -488,20 +489,48 @@ def install(config):
         ##endif
     ##endif
     count=0;
-    for i in range(1,410):
-        linux.time.sleep(.3);
-        hxd=linux.math.floor((i/400)*100);
-        count+=1
-        if(count>3):
-            count=1;
+    start_time=linux.time.time();
+    update_time=start_time;
+    total_updates=1;  # Keep track of the number of .35-second updates
+    while total_updates < 410:  # Run for 30 updates
+        current_time=linux.time.time();
+        # Update the main every 50 milliseconds
+        if (current_time - update_time) >= 0.05:
+            mainwin.update()
+            update_time=current_time;
         ##endif
-        if (hxd>100):
-            hxd=100;
+        if (current_time - start_time) >= 0.3:
+            hxd=linux.math.floor((total_updates/400)*100);
+            count+=1
+            if(count>3):
+                count=1;
+            ##endif
+            if (hxd>100):
+                hxd=100;
+            ##endif
+            ct='.'*count;
+            InstallMessage.setText(f'Finalizing Install{ct} {hxd}%');
+            mainwin.update();
+            start_time=current_time;
+            total_updates+=1;
         ##endif
-        ct='.'*count;
-        InstallMessage.setText(f'Finalizing Install{ct} {hxd}%');
-        mainwin.update();
+        # Add a small delay to avoid busy-waiting
+        linux.time.sleep(0.01);
     ##end
+    #for i in range(1,410):
+    #    linux.time.sleep(.3);
+    #    hxd=linux.math.floor((i/400)*100);
+    #    count+=1
+    #    if(count>3):
+    #        count=1;
+    #    ##endif
+    #    if (hxd>100):
+    #        hxd=100;
+    #    ##endif
+    #    ct='.'*count;
+    #    InstallMessage.setText(f'Finalizing Install{ct} {hxd}%');
+    #    mainwin.update();
+    ###end
     BootSpinner.stop();
     finished=True;
     InstallMessage.setText('Install Complete, Enjoy PyNux! :)');

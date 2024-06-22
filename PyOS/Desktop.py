@@ -504,30 +504,28 @@ def new_desktop(screenname):
         global dock_shown,opendb2,desktop_force_show;
         if not opendb2:
             opendb2=True;
-            if (dock_shown):
-                dock_shown=False;7
+            if dock_shown:
+                dock_shown=False;
                 for i in range(dockheight):
-                    dock.place(x=48,y=canvasheight-(dockheight-i),anchor=ui.NW);
-                    mainwin.update();
+                    dock.geometry(f"{canvaswidth-96}x{dockheight}+48+{canvasheight-(dockheight-i)}");
+                    newroot.update();
                     dock.update();
-                    if not (desktop_force_show):
-                        mainwin.attributes('-topmost',0);
+                    if not desktop_force_show:
+                        newroot.attributes('-topmost',0);
                     ##endif
                 ##end
-                dock.place_forget();
-                opendb2=False;
             else:
                 dock_shown=True;
                 for i in range(dockheight):
-                    dock.place(x=48,y=canvasheight-i,anchor=ui.NW);
-                    mainwin.update();
+                    dock.geometry(f"{canvaswidth-96}x{dockheight}+48+{canvasheight-i}");
+                    newroot.update();
                     dock.update();
-                    if not (desktop_force_show):
-                        mainwin.attributes('-topmost',0);
+                    if not desktop_force_show:
+                        newroot.attributes('-topmost',0);
                     ##endif
                 ##end
-                opendb2=False;
             ##endif
+            opendb2=False;
         ##endif
     ##end
     def dock_btn_click(event):
@@ -537,7 +535,7 @@ def new_desktop(screenname):
             debounce=True;
             toggle=linux.task.Thread(target=toggle_dock);
             toggle.start();
-            mainwin.lower();
+            newroot.lower();
             linux.time.sleep(.1);
             debounce=False;
             desktop.itemconfig(dock_btn,image=dock_hover_img);
@@ -552,7 +550,7 @@ def new_desktop(screenname):
     ##end
     dock_btn=desktop.create_image(0,canvasheight,image=dock_img,anchor=ui.SW);
     dock=Dock(desktop,bg='#333',width=canvaswidth-96,height=dockheight);
-    dock.place(x=48,rely=1,anchor=ui.NW);
+    dock.geometry(f"{canvaswidth-96}x{dockheight}+48+{canvasheight}");
     dock.retrieve_pinned();
     dock.update();
     desktop.tag_bind(dock_btn,'<Button-1>',dock_btn_click);
@@ -666,30 +664,28 @@ def goto_desktop():
         global dock_shown,opendb2,desktop_force_show;
         if not opendb2:
             opendb2=True;
-            if (dock_shown):
+            if dock_shown:
                 dock_shown=False;
                 for i in range(dockheight):
-                    dock.place(x=48,y=canvasheight-(dockheight-i),anchor=ui.NW);
+                    dock.geometry(f"{canvaswidth-96}x{dockheight}+48+{canvasheight-(dockheight-i)}");
                     mainwin.update();
                     dock.update();
-                    if not (desktop_force_show):
+                    if not desktop_force_show:
                         mainwin.attributes('-topmost',0);
                     ##endif
                 ##end
-                dock.place_forget();
-                opendb2=False;
             else:
                 dock_shown=True;
                 for i in range(dockheight):
-                    dock.place(x=48,y=canvasheight-i,anchor=ui.NW);
+                    dock.geometry(f"{canvaswidth-96}x{dockheight}+48+{canvasheight-i}");
                     mainwin.update();
                     dock.update();
-                    if not (desktop_force_show):
+                    if not desktop_force_show:
                         mainwin.attributes('-topmost',0);
                     ##endif
                 ##end
-                opendb2=False;
             ##endif
+            opendb2=False;
         ##endif
     ##end
     def dock_btn_click(event):
@@ -714,10 +710,10 @@ def goto_desktop():
     ##end
     dock_btn=desktop.create_image(0,canvasheight,image=dock_img,anchor=ui.SW);
     dock=Dock(desktop,desktop,bg='#333',width=canvaswidth-96,height=dockheight);
-    dock.place(x=48,rely=1,anchor=ui.NW);
+    dock.geometry(f"{canvaswidth-96}x{dockheight}+48+{canvasheight}");
     dock.retrieve_pinned();
     dock.update();
-    dash_btn=dock.create_image(0,0,image=dash_img,anchor=ui.NW);
+    dash_btn=dock.canvas.create_image(0,0,image=dash_img,anchor=ui.NW);
     
     desktop.tag_bind(dock_btn,'<Button-1>',dock_btn_click);
     desktop.tag_bind(dock_btn,'<Enter>',dock_btn_hover);
@@ -735,9 +731,9 @@ thisdir=linux.os.path.dirname(linux.os.path.realpath(__file__));
 dash_active=False;
 dash_canvas=None;
 opendb=False;
-class Dock(ui.Canvas):
-    def __init__(self,master,desktop=None,*args,**kwargs):
-        ui.Canvas.__init__(self,master,*args,**kwargs);
+class Dock(ui.Toplevel):
+    def __init__(self,master,desktop=None,bg=None,width=400,height=300,**kwargs):
+        ui.Toplevel.__init__(self,master,width=width,height=height,**kwargs);
         self.master=master;
         self.linked_desktop=desktop;
         self.thestyle=ui.Style(self);
@@ -748,6 +744,15 @@ class Dock(ui.Canvas):
         self.icons=[];
         self.themenu=None;
         self.selected_icon=None;
+        if linux.os.name=='nt':
+            self.overrideredirect(True);
+            self.attributes('-topmost',1);
+        else:
+            self.attributes('-type','dock');
+        ##endif
+        self.setTitle('Dock');
+        self.canvas=ui.Canvas(self,bg=bg,width=width,height=height);
+        self.canvas.pack(expand=1,fill=ui.BOTH);
     ##end
     def add_icon(self,icon_path,name='',appid=0,exec=None,isPinned=False):
         width=self.faviconsize;
@@ -761,8 +766,8 @@ class Dock(ui.Canvas):
         x2=x1+self.iconsize;
         y2=y1+self.iconsize;  # Fixed y position with padding
         y3=self.linked_desktop.winfo_height()-48;
-        background=self.create_rectangle(x1,y1,x2,y2,fill='#333',outline='#333');
-        icon_widget=self.create_image(x1+self.iconsize//2,y1+self.iconsize//2,image=icon,anchor=ui.CENTER);
+        background=self.canvas.create_rectangle(x1,y1,x2,y2,fill='#333',outline='#333');
+        icon_widget=self.canvas.create_image(x1+self.iconsize//2,y1+self.iconsize//2,image=icon,anchor=ui.CENTER);
         name_widget=self.linked_desktop.create_text(x1+48+self.iconsize//2,y3,text=name,anchor=ui.S,fill="#fff",font=("Ubuntu",9),state=ui.HIDDEN);
         ico_desc={
             'id':id,
@@ -786,13 +791,13 @@ class Dock(ui.Canvas):
         global icon_debounce;
         icon_debounce=False;
         def on_hover(event):
-            self.itemconfig(background,fill="#444",outline="#444");
+            self.canvas.itemconfig(background,fill="#444",outline="#444");
             self.linked_desktop.itemconfig(name_widget,state=ui.NORMAL);
             self.config(cursor="hand2");
             self.selected_icon=id;
         ##end
         def on_leave(event):
-            self.itemconfig(background,fill="#333",outline="#333");
+            self.canvas.itemconfig(background,fill="#333",outline="#333");
             self.linked_desktop.itemconfig(name_widget,state=ui.HIDDEN);
             self.config(cursor="");
             self.selected_icon=None;
@@ -801,7 +806,7 @@ class Dock(ui.Canvas):
             global icon_debounce;
             if not icon_debounce:
                 icon_debounce=True;
-                self.itemconfig(background,fill="#555",outline="#555");
+                self.canvas.itemconfig(background,fill="#555",outline="#555");
                 self.open_app(exec);
                 linux.time.sleep(.1);
                 icon_debounce=False;
@@ -816,14 +821,14 @@ class Dock(ui.Canvas):
                 icon_debounce=False;
             ##endif
         ##end
-        self.tag_bind(background,'<Button-1>',on_click);
-        self.tag_bind(icon_widget,'<Button-1>',on_click);
-        self.tag_bind(background,'<Button-3>',on_rclick);
-        self.tag_bind(icon_widget,'<Button-3>',on_rclick);
-        self.tag_bind(background,'<Enter>',on_hover);
-        self.tag_bind(icon_widget,'<Enter>',on_hover);
-        self.tag_bind(background,'<Leave>',on_leave);
-        self.tag_bind(icon_widget,'<Leave>',on_leave);
+        self.canvas.tag_bind(background,'<Button-1>',on_click);
+        self.canvas.tag_bind(icon_widget,'<Button-1>',on_click);
+        self.canvas.tag_bind(background,'<Button-3>',on_rclick);
+        self.canvas.tag_bind(icon_widget,'<Button-3>',on_rclick);
+        self.canvas.tag_bind(background,'<Enter>',on_hover);
+        self.canvas.tag_bind(icon_widget,'<Enter>',on_hover);
+        self.canvas.tag_bind(background,'<Leave>',on_leave);
+        self.canvas.tag_bind(icon_widget,'<Leave>',on_leave);
         self.icons.append(ico_desc);
     ##end
     def on_unpin(self,event):
@@ -1041,8 +1046,8 @@ class Dock(ui.Canvas):
         the_desc=self.get_icon_by_id(id);
         if the_desc:
             self.icons.remove(the_desc);
-            self.delete(the_desc['bg_widget']);
-            self.delete(the_desc['img']);
+            self.canvas.delete(the_desc['bg_widget']);
+            self.canvas.delete(the_desc['img']);
             self.linked_desktop.delete(the_desc['name_widget']);
             self.update_icons();
         ##endif
@@ -1051,10 +1056,10 @@ class Dock(ui.Canvas):
         for i in self.icons:
             if (i['opened']):
                 if i['open_bar']:
-                    self.delete(i['open_bar']);
+                    self.canvas.delete(i['open_bar']);
                     i['open_bar']=None;
                 ##endif
-                i['open_bar']=self.create_rectangle(i['x']+2,i['y']+i['h']+2,i['x']+i['w']-2,i['y']+i['h']+2,fill="#fff",outline="#fff");
+                i['open_bar']=self.canvas.create_rectangle(i['x']+2,i['y']+i['h']+2,i['x']+i['w']-2,i['y']+i['h']+2,fill="#fff",outline="#fff");
             ##endif
         ##end
     ##end
@@ -1085,7 +1090,7 @@ class Dash_Menu(ui.Canvas):
         self.add_icon("Files",thisdir+"/programs/Files/favicon.png",open_files);
         self.add_icon("Terminal",thisdir+"/programs/Terminal/fi_48x48.png",bindFn(lib_main.open_terminal));
         linux.populate_dash(bindFn(self.add_icon));
-        #self.add_icon('Firefox','/nix/store/7cib0r7590ldi5gblwmd43y5jrgq5gqg-firefox-120.0/share/icons/hicolor/48x48/apps/firefox.png','firefox');
+        self.add_icon('Firefox','/nix/store/7cib0r7590ldi5gblwmd43y5jrgq5gqg-firefox-120.0/share/icons/hicolor/48x48/apps/firefox.png','firefox');
     ##end
     def add_icon(self,app_name,icon_path,application=None):
         icon_image=ui.PhotoImage(file=icon_path);
@@ -1231,7 +1236,7 @@ def dock_handler(dock,desktop):
     global mainwin,config,icons,desktop_force_show,dock_shown;
     dock.e=test=com.ImageTk.PhotoImage(file=thisdir+'/assets/images/test_icon.png');
     dock.e2=dash_icon=com.ImageTk.PhotoImage(file=thisdir+'/assets/images/dash.png');
-    dash_btn=dock.create_image(0,0,image=dash_icon,anchor=ui.NW);
+    dash_btn=dock.canvas.create_image(0,0,image=dash_icon,anchor=ui.NW);
     desktop.update();
     dockheight=48;
     canvasheight=desktop.winfo_height();
@@ -1295,12 +1300,12 @@ def dock_handler(dock,desktop):
         ##endif
     ##end
     def dash_btn_hover(event):
-        dock.itemconfig(dash_btn,image=dash_icon);  
+        dock.canvas.itemconfig(dash_btn,image=dash_icon);  
         dock.config(cursor="hand2");
         dock.update();
     ##end
     def dash_btn_hover_leave(event):
-        dock.itemconfig(dash_btn,image=dash_icon);
+        dock.canvas.itemconfig(dash_btn,image=dash_icon);
         dock.config(cursor="");
         dock.update();
     ##end
@@ -1320,9 +1325,9 @@ def dock_handler(dock,desktop):
             open_dash(dock,desktop);
         ##endif
     ##end
-    dock.tag_bind(dash_btn,'<Button-1>',bindFn(dash_btn_click,False));
-    dock.tag_bind(dash_btn,'<Enter>',dash_btn_hover);
-    dock.tag_bind(dash_btn,'<Leave>',dash_btn_hover_leave);
+    dock.canvas.tag_bind(dash_btn,'<Button-1>',bindFn(dash_btn_click,False));
+    dock.canvas.tag_bind(dash_btn,'<Enter>',dash_btn_hover);
+    dock.canvas.tag_bind(dash_btn,'<Leave>',dash_btn_hover_leave);
     desktop.bind('<Super_L>',bindFn(dash_btn_click,True));
     desktop.bind('<Super_R>',bindFn(dash_btn_click,True));
     desktop.bind('<XF86Search>',bindFn(dash_btn_click,True));
