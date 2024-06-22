@@ -1,5 +1,5 @@
 import tkinter as tk;
-import queue,re,os,time,sys;
+import os,pty,queue,re,sys,time;
 import threading as task;
 import subprocess as sub;
 
@@ -143,8 +143,11 @@ class TerminalFrame(tk.Frame):
             return path;
         ##endif
     ##end
-    # def run_cmd(self,cmd,lastLI):
-    #     process=sub.Popen(cmd,stdin=sub.PIPE,stdout=sub.PIPE,stderr=sub.STDOUT,shell=True,universal_newlines=True);
+    # def run_cmd(self,cmd="",lastLI=0):
+    #     os.environ['PYTHONUNBUFFERED']='1';
+    #     process=sub.Popen(cmd,stdin=sub.PIPE,stdout=sub.PIPE,stderr=sub.STDOUT,shell=True,universal_newlines=True,cwd=self.exec_path);
+    #     global inputting;
+    #     inputting=False;
     #     #before we run any executables, check for if the user ran "cd" to avoid broken directories.
     #     if (self.startsWith(cmd,'cd')):
     #         path=cmd.split(' ')[1];  # Get the directory from the command
@@ -160,59 +163,67 @@ class TerminalFrame(tk.Frame):
     #             self.master.update();
     #             print(f"Directory changed to {self.path}");
     #         except FileNotFoundError:
-    #             self.mainTextArea.insert(lastLI,f"Directory not found: {path}");
+    #             self.mainTextArea.insert(tk.END,f"Directory not found: {path}\n");
     #             self.master.update();
     #         except PermissionError:
-    #             self.mainTextArea.insert(lastLI,"Permission Denied");
+    #             self.mainTextArea.insert(tk.END,"Permission Denied\n");
     #             self.master.update();
     #         ##endtry
     #     ##endif
-    #     def check_for_input(process):
-    #         if self.typing==True:
-    #             inputting=True;
-    #             def end_input(event):
-    #                 inputting=False;
-    #             ##end
-    #             self.mainTextArea.bind('<Return>',end_input);
-    #             while (inputting==True):
-    #                 self.master.update();
-    #                 time.sleep(0.1);
-    #             ##end
-    #             self.send_to_process(process,self.curr_text); #this line needs to accept a full line / program command before going farther.
-
-    #             self.curr_text='';
-    #             self.refresh();
-    #             self.master.update();
-    #         ##endif
-    #     ##end
     #     #PROCESS I/O LOOP
-    #     while process.poll() is None:
-    #         prev_input=self.curr_text;
-    #         (output,err)=process.communicate(prev_input);
-    #         if (output!=""):
-    #             output_lines=output.splitlines();
-    #             for k in output_lines:
-    #                 self.mainTextArea.insert(lastLI,k);
-    #                 lastLI+=1;
-    #                 self.master.update();
-    #             ##end
-    #         elif (err):
-    #             err_lines=err.splitlines();
-    #             for k in err_lines:
-    #                 self.mainTextArea.insert(lastLI,k);
-    #                 lastLI+=1;
-    #                 self.master.update();
-    #             ##end
-    #         ##endif
-    #         check_for_input(process);
-    #         self.master.update();
-    #         time.sleep(.1);
+    #     self.mainTextArea.unbind("<Return>");
+    #     self.curr_text='';
+    #     global outlen,enter_bound;
+    #     enter_bound=False;
+    #     def send_input(input,event):
+    #         try:
+    #             tosend=input+"\n";
+    #             process.stdin.write(tosend);
+    #             process.stdin.flush();
+    #             inputting=False;
+    #         except Exception as e:
+    #             print(e);
+    #         ##endtry
     #     ##end
+    #     while process.poll() is None:
+    #         def new_backspace(event):
+    #             global outlen;
+    #             return self.backspace_callback(def_len=outlen);
+    #         ##end
+    #         def new_enter(event):
+    #             tosend=self.curr_text+"\n";
+    #             process.stdin.write(tosend);
+    #             process.stdin.flush();
+    #             self.curr_text="";
+    #         ##end
+    #         self.mainTextArea.bind('<Return>',new_enter);
+    #         self.mainTextArea.bind('<BackSpace>',new_backspace);
+    #         output=process.stdout;
+    #         output.flush();
+    #         outlen=0;
+    #         if (output):
+    #             for line in output:
+    #                 self.mainTextArea.insert(tk.END,line);
+    #                 self.mainTextArea.see(tk.END);
+    #                 self.mainTextArea.yview_moveto(1);
+    #                 self.mainTextArea.mark_set(tk.INSERT,tk.END);
+    #                 self.master.update();
+    #             ##end
+    #         else:
+    #             break;
+    #         ##endif
+    #         outlen=0;
+    #         self.master.update();
+    #     ##end
+    #     if cmd!="":
+    #         self.mainTextArea.insert(tk.END,'\n');
+    #     ##endif
     #     return process.returncode;
     # ##end
     def run_cmd(self,cmd="",lastLI=0):
         os.environ['PYTHONUNBUFFERED']='1';
-        process=sub.Popen(cmd,stdin=sub.PIPE,stdout=sub.PIPE,stderr=sub.STDOUT,shell=True,universal_newlines=True,cwd=self.exec_path);
+        master_fd,slave_fd=pty.openpty();
+        process=sub.Popen(cmd,stdin=slave_fd,stdout=slave_fd,stderr=slave_fd,close_fds=True,shell=True,universal_newlines=True,cwd=self.exec_path);
         global inputting;
         inputting=False;
         #before we run any executables, check for if the user ran "cd" to avoid broken directories.
@@ -241,47 +252,39 @@ class TerminalFrame(tk.Frame):
         self.mainTextArea.unbind("<Return>");
         self.curr_text='';
         global outlen,enter_bound;
+        outlen=0;
         enter_bound=False;
-        def send_input(input,event):
-            try:
-                tosend=input+"\n";
-                process.stdin.write(tosend);
-                process.stdin.flush();
-                inputting=False;
-            except Exception as e:
-                print(e);
-            ##endtry
+        def new_backspace(event):
+            global outlen;
+            # Your backspace callback logic here
+            return self.backspace_callback(def_len=outlen);
         ##end
+        def new_enter(event):
+            tosend=self.curr_text+"\n";
+            os.write(master_fd,tosend.encode());  # Write to the pty
+            self.curr_text="";
+        ##end
+        self.mainTextArea.bind('<Return>', new_enter);
+        self.mainTextArea.bind('<BackSpace>', new_backspace);
         while process.poll() is None:
-            def new_backspace(event):
-                global outlen;
-                return self.backspace_callback(def_len=outlen);
-            ##end
-            def new_enter(event):
-                tosend=self.curr_text+"\n";
-                process.stdin.write(tosend);
-                process.stdin.flush();
-                self.curr_text="";
-            ##end
-            self.mainTextArea.bind('<Return>',new_enter);
-            self.mainTextArea.bind('<BackSpace>',new_backspace);
-            output=process.stdout;
-            output.flush();
-            outlen=0;
-            if (output):
-                for line in output:
+            try:
+                output=os.read(master_fd,1024);  # Read from the pty
+                if output:
+                    line=output.decode();
                     self.mainTextArea.insert(tk.END,line);
                     self.mainTextArea.see(tk.END);
                     self.mainTextArea.yview_moveto(1);
                     self.mainTextArea.mark_set(tk.INSERT,tk.END);
+                    outlen=len(line);
                     self.master.update();
                 ##end
-            else:
-                break;
-            ##endif
-            outlen=0;
-            self.master.update();
+            except OSError:
+                break;  # End of file or error
+            ##endtry
+            time.sleep(0.01); #add a small delay to avoid busy looping.
         ##end
+        # Close the master file descriptor
+        os.close(master_fd);
         if cmd!="":
             self.mainTextArea.insert(tk.END,'\n');
         ##endif

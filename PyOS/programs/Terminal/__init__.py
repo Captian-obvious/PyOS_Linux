@@ -1,13 +1,6 @@
 import tkinter as tk;
 import threading as task;
-TerminalFrame=None;
-try:
-    from .pyTerm import TerminalFrame as t;
-    TerminalFrame=t;
-except ImportError as e:
-    import pyTerm
-    TerminalFrame=pyTerm.TerminalFrame;
-##endtry
+from .pyTerm import TerminalFrame;
 import os,sys;
 thisdir=os.path.dirname(os.path.realpath(__file__));
 imported=False;
