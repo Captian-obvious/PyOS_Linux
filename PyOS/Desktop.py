@@ -710,9 +710,9 @@ def goto_desktop():
     ##end
     dock_btn=desktop.create_image(0,canvasheight,image=dock_img,anchor=ui.SW);
     dock=Dock(desktop,desktop,bg='#333',width=canvaswidth-96,height=dockheight);
-    dock.geometry(f"{canvaswidth-96}x{dockheight}+48+{canvasheight}");
     dock.retrieve_pinned();
     dock.update();
+    dock.geometry(f"{canvaswidth-96}x{dockheight}+48+{canvasheight-dockheight}");
     dash_btn=dock.canvas.create_image(0,0,image=dash_img,anchor=ui.NW);
     
     desktop.tag_bind(dock_btn,'<Button-1>',dock_btn_click);
@@ -766,9 +766,30 @@ class Dock(ui.Toplevel):
         x2=x1+self.iconsize;
         y2=y1+self.iconsize;  # Fixed y position with padding
         y3=self.linked_desktop.winfo_height()-48;
+        font_size=9;
         background=self.canvas.create_rectangle(x1,y1,x2,y2,fill='#333',outline='#333');
         icon_widget=self.canvas.create_image(x1+self.iconsize//2,y1+self.iconsize//2,image=icon,anchor=ui.CENTER);
-        name_widget=self.linked_desktop.create_text(x1+48+self.iconsize//2,y3,text=name,anchor=ui.S,fill="#fff",font=("Ubuntu",9),state=ui.HIDDEN);
+        label_width=int(len(name)*font_size);  # Calculate text width
+        label_height=int(font_size*1.7);
+        # Create the Toplevel window
+        name_widget=ui.Toplevel(self.linked_desktop);
+        name_widget.title("Toplevel");
+        name_widget.config(bg="#333");
+        if linux.os.name=='nt':
+            name_widget.overrideredirect(True);
+            name_widget.attributes('-topmost',1);
+        else:
+            name_widget.attributes('-type','dock');
+        ##endif
+        name_widget.geometry(f"{label_width}x{label_height}+{(x1+48+self.iconsize//2)-label_width//2}+{y3-label_height}");
+        name_label=ui.Label(name_widget,text=name,bg='#333',fg='#fff',font=("Ubuntu",font_size));
+        name_label.place(relx=.5,rely=.5,relheight=1,relwidth=1,anchor=ui.CENTER);
+        name_widget.update();
+        name_widget.update_idletasks();
+        name_widget.deiconify();
+        name_widget.geometry(f"{label_width}x{label_height}+{(x1+48+self.iconsize//2)-label_width//2}+{y3-label_height}");
+        name_widget.iconify();
+        #name_widget=self.linked_desktop.create_text(x1+48+self.iconsize//2,y3,text=name,anchor=ui.S,fill="#fff",font=("Ubuntu",9),state=ui.HIDDEN);
         ico_desc={
             'id':id,
             'img':icon_widget,
@@ -790,15 +811,24 @@ class Dock(ui.Toplevel):
         };
         global icon_debounce;
         icon_debounce=False;
+        def move_to_pos():
+            name_widget.geometry(f"{label_width}x{label_height}+{(x1+48+self.iconsize//2)-label_width//2}+{y3-label_height}");
+        ##end
         def on_hover(event):
             self.canvas.itemconfig(background,fill="#444",outline="#444");
-            self.linked_desktop.itemconfig(name_widget,state=ui.NORMAL);
+            #self.linked_desktop.itemconfig(name_widget,state=ui.NORMAL);
+            name_widget.deiconify();
+            move_to_pos();
             self.config(cursor="hand2");
             self.selected_icon=id;
         ##end
         def on_leave(event):
             self.canvas.itemconfig(background,fill="#333",outline="#333");
-            self.linked_desktop.itemconfig(name_widget,state=ui.HIDDEN);
+            #self.linked_desktop.itemconfig(name_widget,state=ui.HIDDEN);
+            move_to_pos();
+            name_widget.iconify();
+            #name_widget.geometry(f"{label_width}x{int(font_size*1.7)}+{x1+48+label_width//2}+{y3}");
+            name_widget.update();
             self.config(cursor="");
             self.selected_icon=None;
         ##end
@@ -807,7 +837,12 @@ class Dock(ui.Toplevel):
             if not icon_debounce:
                 icon_debounce=True;
                 self.canvas.itemconfig(background,fill="#555",outline="#555");
-                self.open_app(exec);
+                theicon=self.get_icon_by_exec(exec);
+                if not theicon['opened']:
+                    self.open_app(exec);
+                else:
+                    linux.focus_process(theicon['pid']);
+                ##endif
                 linux.time.sleep(.1);
                 icon_debounce=False;
             ##endif
@@ -962,6 +997,13 @@ class Dock(ui.Toplevel):
             print("Command is a shell command, running via libMain");
             process_thread=linux.task.Thread(target=lib_main.run_application,args=(cmd,));
             process_thread.start();
+            if i:
+                oldindex=self.icons.index(i);
+                self.icons.remove(i);
+                i['pid']=linux.get_pid_by_name(cmd);
+                self.icons.insert(oldindex,i);
+                self.update_icons();
+            ##endif
             while process_thread.is_alive():
                 self.update_icons();
                 self.update();
@@ -972,6 +1014,7 @@ class Dock(ui.Toplevel):
                 oldindex=self.icons.index(i);
                 self.icons.remove(i);
                 i['opened']=False;
+                i['pid']=None;
                 self.icons.insert(oldindex,i);
                 if not i['pinned']:
                     self.remove_icon(i['id']);
@@ -1048,7 +1091,8 @@ class Dock(ui.Toplevel):
             self.icons.remove(the_desc);
             self.canvas.delete(the_desc['bg_widget']);
             self.canvas.delete(the_desc['img']);
-            self.linked_desktop.delete(the_desc['name_widget']);
+            #self.linked_desktop.delete(the_desc['name_widget']);
+            the_desc['name_widget'].destroy();
             self.update_icons();
         ##endif
     ##end
@@ -1262,7 +1306,7 @@ def dock_handler(dock,desktop):
             else:
                 dock_shown=True;
                 for i in range(dockheight):
-                    dock.place(x=48,y=canvasheight-i,anchor=ui.NW);
+                    dock.geometry(f"{canvaswidth-96}x{dockheight}+48+{canvasheight-i}");
                     mainwin.update();
                     dock.update();
                     if not (desktop_force_show):
@@ -1276,7 +1320,7 @@ def dock_handler(dock,desktop):
             if (not shown):
                 dock_shown=False;
                 for i in range(dockheight):
-                    dock.place(x=48,y=canvasheight-(dockheight-i),anchor=ui.NW);
+                    dock.geometry(f"{canvaswidth-96}x{dockheight}+48+{canvasheight-(dockheight-i)}");
                     mainwin.update();
                     dock.update();
                     if not (desktop_force_show):
@@ -1288,7 +1332,7 @@ def dock_handler(dock,desktop):
             else:
                 dock_shown=True;
                 for i in range(dockheight):
-                    dock.place(x=48,y=canvasheight-i,anchor=ui.NW);
+                    dock.geometry(f"{canvaswidth-96}x{dockheight}+48+{canvasheight-i}");
                     mainwin.update();
                     dock.update();
                     if not (desktop_force_show):

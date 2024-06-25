@@ -164,6 +164,44 @@ def populate_dash(add_icon=None):
         ##end
     ##endif
 ##end
+def get_window_title_by_pid(pid):
+    try:
+        process=psutils.Process(pid);
+        window_title=process.name();  # Get the process name (executable)
+        return window_title;
+    except psutils.NoSuchProcess:
+        return None;
+    ##endtry
+##end
+def get_pid_by_name(process_name):
+    pid=None;
+    for proc in psutils.process_iter(attrs=['pid','name']):
+        if proc.exe==process_name:
+            pid=proc.pid;
+            break;
+        ##endif
+    ##end
+    return pid;
+##end
+def focus_process(pid):
+    import pywinctl;
+    if (not pid):
+        return;
+    ##endif
+    try:
+        title=None;
+        if (pid==-1):
+            title=pywinctl.getActiveWindowTitle();
+        else:
+            title=get_window_title_by_pid(pid);
+        ##endif
+        if (title):
+            pywinctl.getWindowsWithTitle(title)[0].activate();
+        ##endif
+    except Exception as e:
+        print(e);
+    ##endtry
+##end
 def is_live_boot():
     #Check if the system is booted live (aka configs are missing)
     if (os.path.exists('PyOS/cfg/main.pycfg')):
