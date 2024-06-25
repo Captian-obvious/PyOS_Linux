@@ -6,7 +6,7 @@ It is based on Kubuntu and uses KDE's Window manager along with a custom desktop
 <ul>
     <li>Python-Centered and Lightweight</li>
     <li>Highly customizable</li>
-    <li>Versatile Application framework/built-in Python Interpreter named PyEXE</li>
+    <li>Versatile Application framework/built-in Python Interpreter named PyEXE (more info <a href="https://github.com/Captian-obvious/PyEXE">here</a>a>)</li>
     <li>Designed to be user friendly</li>
 </ul>
 <h2>Minimum System</h2>
