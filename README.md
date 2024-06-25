@@ -13,7 +13,7 @@ It is based on Kubuntu and uses KDE's Window manager along with a custom desktop
 <ul>
     <li>At least 1 GB of ram</li>
     <li>64-bit instruction support</li>
-    <li>At least 10GB storage (only 3.2GB is actually required for the iso)</li>
+    <li>At least 3.2 GB of storage (however 10GB is recommended for smooth experience)</li>
 </ul>
 
 <em>note: this is a WIP and is not fully finished. Full features are not implemented yet.</em>
