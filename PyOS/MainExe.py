@@ -327,9 +327,9 @@ def authorize(main,cfg,callback):
                 return;
             elif (com.obfescate(pw_ent.get())==user['password']):
                 print('Welcome.');
-                callback(main,cfg,user);
                 root.update();
                 root.destroy();
+                callback(main,cfg,user);
                 return;
             else:
                 print('Incorrect Password.');
@@ -371,43 +371,22 @@ def authorize(main,cfg,callback):
 
 def restart(config):
     global main,msg,count;
-    main.bootIcon=icon=ui.PhotoImage(file='PyOS/assets/BootLogo.png');
-    root=ui.Frame(main,bg='#333');
-    root.place(relx=.5,rely=.5,relwidth=1,relheight=1,anchor=ui.CENTER);
-    img=ui.Label(main,text='',font=('Ubuntu',20),fg='#fff',bg='#333',height='128px',width='128px',image=icon);
-    img.place(relx=.5,rely=.5,anchor=ui.CENTER);
-    msg=ui.Label(main,text='...',font=('Ubuntu',20),fg='#fff',bg='#333',height=1);
-    msg.place(relx=.5,rely=1,relwidth=1,anchor=ui.S);
-    #oldlen=5.2;
-    BootSpinner=BootupSpinner(main,canvas_size=96,animation_length=3.2,arc_width=6,arc_color=("#fff","#fff"),bg_color="#333");
-    BootSpinner.place(relx=.5,rely=.9,anchor=ui.S);
     count=0;
     def restart_msg():
         global count,main,msg;
-        start_time=linux.time.time();
-        update_time=start_time;
-        total_updates=0;  # Keep track of the number of .35-second updates
-        while total_updates < 30:  # Run for 30 updates
-            current_time=linux.time.time();
-            # Update the main every 50 milliseconds
-            if (current_time - update_time) >= 0.05:
-                main.update()
-                update_time=current_time;
+        if linux.os.path.exists('./splash') or linux.os.path.exists('./splash.exe'):
+            if linux.os.name=="nt":
+                linux.runner.run(['splash','--mode=shutdown','--reboot']);
+            else:
+                linux.runner.run(['./splash','--mode=shutdown','--reboot']);
             ##endif
-            if (current_time - start_time) >= 0.35:
-                count+=1;
-                if count > 3:
-                    count=0;
-                ##endif
-                ct='.'*count;
-                msg.setText(f'Restarting{ct}');
-                start_time=current_time;
-                total_updates+=1;
+        else:
+            if linux.os.name=="nt":
+                linux.runner.run(['pythonw','plymouth_boot.pyw','--mode=shutdown ','--reboot']);
+            else:
+                linux.runner.run(['./plymouth_boot.pyw','--mode=shutdown ','--reboot']);
             ##endif
-            # Add a small delay to avoid busy-waiting
-            linux.time.sleep(0.01);
-        ##end
-        BootSpinner.stop();
+        ##endif
     ##end
     def restart_fn():
         global main;
@@ -416,49 +395,29 @@ def restart(config):
     ##end
     restart_task=linux.task.Thread(target=restart_msg);
     restart_task.start();
+    main.destroy();
     restart_msg();
     #__NOT YET FULLY IMPLEMENTED__
     quit();
 ##end
 def shutdown(config):
     global main,msg,count;
-    main.bootIcon=icon=ui.PhotoImage(file='PyOS/assets/BootLogo.png');
-    root=ui.Frame(main,bg='#333');
-    root.place(relx=.5,rely=.5,relwidth=1,relheight=1,anchor=ui.CENTER);
-    img=ui.Label(main,text='',font=('Ubuntu',20),fg='#fff',bg='#333',height='128px',width='128px',image=icon);
-    img.place(relx=.5,rely=.5,anchor=ui.CENTER);
-    msg=ui.Label(main,text='...',font=('Ubuntu',20),fg='#fff',bg='#333',height=1);
-    msg.place(relx=.5,rely=1,relwidth=1,anchor=ui.S);
-    #oldlen=5.2;
-    BootSpinner=BootupSpinner(main,canvas_size=96,animation_length=3.2,arc_width=6,arc_color=("#fff","#fff"),bg_color="#333");
-    BootSpinner.place(relx=.5,rely=.9,anchor=ui.S);
     count=0;
     def shutdown_msg():
         global count,main,msg;
-        start_time=linux.time.time();
-        update_time=start_time;
-        total_updates=0;  # Keep track of the number of .35-second updates
-        while total_updates < 30:  # Run for 30 updates
-            current_time=linux.time.time();
-            # Update the main every 50 milliseconds
-            if (current_time - update_time) >= 0.05:
-                main.update();
-                update_time=current_time;
+        if linux.os.path.exists('./splash') or linux.os.path.exists('./splash.exe'):
+            if linux.os.name=="nt":
+                linux.runner.run(['splash','--mode=shutdown']);
+            else:
+                linux.runner.run(['./splash','--mode=shutdown']);
             ##endif
-            if (current_time - start_time) >= 0.35:
-                count+=1;
-                if count > 3:
-                    count=0;
-                ##endif
-                ct='.'*count;
-                msg.setText(f'Shutting Down{ct}');
-                start_time=current_time;
-                total_updates+=1;
+        else:
+            if linux.os.name=="nt":
+                linux.runner.run(['pythonw','plymouth_boot.pyw','--mode=shutdown']);
+            else:
+                linux.runner.run(['./plymouth_boot.pyw','--mode=shutdown']);
             ##endif
-            # Add a small delay to avoid busy-waiting
-            linux.time.sleep(0.01);
-        ##end
-        BootSpinner.stop();
+        ##endif
     ##end
     def shutdown_fn():
         global main;
@@ -467,6 +426,7 @@ def shutdown(config):
     ##end
     shutdown_task=linux.task.Thread(target=shutdown_fn);
     shutdown_task.start();
+    main.destroy();
     shutdown_msg();
     quit();
 ##end
