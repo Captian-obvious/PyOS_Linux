@@ -788,6 +788,9 @@ class Dock(ui.Toplevel):
         name_widget.update_idletasks();
         name_widget.deiconify();
         name_widget.geometry(f"{label_width}x{label_height}+{(x1+48+self.iconsize//2)-label_width//2}+{y3-label_height}");
+        if linux.os.name=='nt':
+            name_widget.overrideredirect(False);
+        ##endif
         name_widget.iconify();
         #name_widget=self.linked_desktop.create_text(x1+48+self.iconsize//2,y3,text=name,anchor=ui.S,fill="#fff",font=("Ubuntu",9),state=ui.HIDDEN);
         ico_desc={
@@ -817,6 +820,9 @@ class Dock(ui.Toplevel):
         def on_hover(event):
             self.canvas.itemconfig(background,fill="#444",outline="#444");
             #self.linked_desktop.itemconfig(name_widget,state=ui.NORMAL);
+            if linux.os.name=='nt':
+                name_widget.overrideredirect(True);
+            ##endif
             name_widget.deiconify();
             move_to_pos();
             self.config(cursor="hand2");
@@ -826,6 +832,9 @@ class Dock(ui.Toplevel):
             self.canvas.itemconfig(background,fill="#333",outline="#333");
             #self.linked_desktop.itemconfig(name_widget,state=ui.HIDDEN);
             move_to_pos();
+            if linux.os.name=='nt':
+                name_widget.overrideredirect(False);
+            ##endif
             name_widget.iconify();
             #name_widget.geometry(f"{label_width}x{int(font_size*1.7)}+{x1+48+label_width//2}+{y3}");
             name_widget.update();
@@ -1134,7 +1143,7 @@ class Dash_Menu(ui.Canvas):
         self.add_icon("Files",thisdir+"/programs/Files/favicon.png",open_files);
         self.add_icon("Terminal",thisdir+"/programs/Terminal/fi_48x48.png",bindFn(lib_main.open_terminal));
         linux.populate_dash(bindFn(self.add_icon));
-        self.add_icon('Firefox','/nix/store/7cib0r7590ldi5gblwmd43y5jrgq5gqg-firefox-120.0/share/icons/hicolor/48x48/apps/firefox.png','firefox');
+        #self.add_icon('Firefox','/nix/store/7cib0r7590ldi5gblwmd43y5jrgq5gqg-firefox-120.0/share/icons/hicolor/48x48/apps/firefox.png','firefox');
     ##end
     def add_icon(self,app_name,icon_path,application=None):
         icon_image=ui.PhotoImage(file=icon_path);
