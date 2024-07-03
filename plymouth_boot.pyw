@@ -74,7 +74,8 @@ def do_splash(is_for_reboot=False,mode="boot"):
     msg.place(relx=.5,rely=1,relwidth=1,anchor=tk.S);
     #oldlen=5.2;
     #oldsize=96;
-    BootSpinner=BootupSpinner(root,canvas_size=96,animation_length=3.2,arc_width=6,arc_color=("#fff","#fff"),bg_color="#333");
+    #oldwidth=6;
+    BootSpinner=BootupSpinner(root,canvas_size=64,animation_length=3.2,arc_width=4,arc_color=("#fff","#fff"),bg_color="#333");
     BootSpinner.place(relx=.5,rely=.8,anchor=tk.CENTER);
     root.update(); #fixes the window size values for future use
     root.attributes('-topmost',0);
