@@ -1,16 +1,16 @@
 #!/usr/bin/env python
-import io,os,platform,sys,time;
+import argparse,io,os,platform,sys,time;
 import contextlib as ctx;
 from dis import dis;
 import subprocess as sub;
 import threading as task;
-import tkinter as tk;
+#import tkinter as tk;
+import traceback;
 exe_mark='pe';
-
+ver="3.45.3";
 if (platform.system()=='Linux'):
     exe_mark='elf';
 ##endif
-
 class file_reader:
     class exe_headers:
         def __init__(self):
@@ -20,6 +20,9 @@ class file_reader:
             def __init__(self,data):
                 # Parse the ELF header data (e.g., read from a file)
                 self.magic_number=data[0:4];# ELF magic number (usually b'\x7fELF')
+                if self.magic_number!=b"\x7fELF":
+                    return "invalid";
+                ##endif
                 self.file_class=data[4];# 32-bit (1) or 64-bit (2)
                 self.endianness=data[5];# Little-endian (1) or big-endian (2)
                 self.version=data[6];# ELF version (usually 1)
@@ -62,7 +65,10 @@ class file_reader:
             def __init__(self,data):
                 #self.magic=b"PE\x00\x00";
                 # Parse the PE header data (e.g., read from a file)
-                self.pe_signature = data[0:4];                                      # PE magic number (usually b'MZ')
+                self.pe_signature = data[0:4];# PE magic number (usually b'MZ')
+                if self.pe_signature!=b"MZ":
+                    return "invalid";
+                ##endif
                 self.machine_type = int.from_bytes(data[4:6],byteorder='little');
                 self.num_sections = int.from_bytes(data[6:8],byteorder='little');
                 self.head_len=20;
@@ -104,7 +110,9 @@ class file_reader:
     ##end
     def read_header(self):
         the_header=self.fheader(self.read());
-        the_header_length=the_header.head_len;
+        if the_header!="invalid":
+            the_header_length=the_header.head_len;
+        ##endif
         return the_header;
     ##end
     def read(self,*args):
@@ -129,25 +137,250 @@ class JIT_Compiler:
         pass;
     ##end
 ##end
-
+class Interpreter:
+    def __init__(self):
+        self.code="";
+        self.finished=False;
+    ##end
+    def init(self,codetorun=""):
+        self.finished=False;
+        if codetorun!="":
+            self.code=codetorun;
+        ##endif
+    ##end
+    def run(self):
+        loaded=self.code;
+        output=exec(loaded);
+        self.finished=True;
+    ##end
+##end
+class Interactive:
+    def __init__(self):
+        pass;
+    ##end
+    def start(self):
+        arch=platform.machine();
+        print(f'PyEXE v{ver} ({arch}) on {platform.system()}');
+        print(f'Type "help", "copyright", "credits", or "license" for more information.');
+        while True:
+            cmd=input('>>>');
+            if cmd==None:
+                cmd="";
+            ##endif
+            if cmd.startswith('if '):
+                if cmd.endswith(":"):
+                    cmd=self.__define__(cmd,1);
+                ##endif
+            elif cmd.startswith('def '):
+                if cmd.endswith(":"):
+                    cmd=self.__define__(cmd,1);
+                ##endif
+            elif cmd.startswith('for '):
+                if cmd.endswith(":"):
+                    cmd=self.__define__(cmd,1);
+                ##endif
+            elif cmd.startswith('while '):
+                if cmd.endswith(":"):
+                    cmd=self.__define__(cmd,1);
+                ##endif
+            elif cmd.startswith('class '):
+                if cmd.endswith(":"):
+                    cmd=self.__define__(cmd,1);
+                ##endif
+            elif cmd.startswith('try'):
+                if cmd.endswith(":"):
+                    cmd=self.__define_try__(cmd,1);
+                ##endif
+            ##endif
+            try:
+                exec(cmd);
+            except Exception as e:
+                print(traceback.format_exc());
+            ##endtry
+        ##end
+    ##end
+    def __define__(self,cmd,layer):
+        function_typing=True;
+        def_content=cmd+"\n";
+        indent=4;
+        while function_typing:
+            cmd2=input('...'+" "*(indent*layer));
+            if cmd2==None:
+                cmd2="";
+            ##endif
+            if cmd2.startswith('if '):
+                if cmd2.endswith(":"):
+                    cmd2=self.__define__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            elif cmd2.startswith('def '):
+                if cmd2.endswith(":"):
+                    cmd2=self.__define__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            elif cmd2.startswith('for '):
+                if cmd2.endswith(":"):
+                    cmd2=self.__define__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            elif cmd2.startswith('while '):
+                if cmd2.endswith(":"):
+                    cmd2=self.__define__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            elif cmd2.startswith('class '):
+                if cmd.endswith(":"):
+                    cmd2=self.__define__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            elif cmd2.startswith('try'):
+                if cmd2.endswith(":"):
+                    cmd2=self.__define_try__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            ##endif
+            if cmd2=="":
+                break;
+            else:
+                def_content+=(" "*(indent*layer))+cmd2+"\n";
+            ##endif
+        ##end
+        return def_content
+    ##end
+    def __define_try__(self,cmd,layer):
+        function_typing=True;
+        def_content=cmd+"\n";
+        indent=4;
+        try_indent=" "*(indent*(layer-1));
+        while function_typing:
+            cmd2=input('...'+try_indent);
+            if cmd2==None:
+                cmd2="";
+            ##endif
+            if cmd2.startswith(" "*(indent*layer)+'if '):
+                if cmd2.endswith(":"):
+                    cmd2=self.__define__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            elif cmd2.startswith(" "*(indent*layer)+'def '):
+                if cmd2.endswith(":"):
+                    cmd2=self.__define__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            elif cmd2.startswith(" "*(indent*layer)+'for '):
+                if cmd2.endswith(":"):
+                    cmd2=self.__define__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            elif cmd2.startswith(" "*(indent*layer)+'while '):
+                if cmd2.endswith(":"):
+                    cmd2=self.__define__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            elif cmd2.startswith(" "*(indent*layer)+'class '):
+                if cmd.endswith(":"):
+                    cmd2=self.__define__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            elif cmd2.startswith(" "*(indent*layer)+'try'):
+                if cmd2.endswith(":"):
+                    cmd2=self.__define_try__(cmd2,layer+1);
+                else:
+                    def_content=cmd2;
+                    break;
+                ##endif
+            ##endif
+            if cmd2=="":
+                break;
+            else:
+                def_content+=try_indent+cmd2+"\n";
+            ##endif
+        ##end
+        return def_content;
+    ##end
+##end
+def processArgs(args):
+    parser=argparse.ArgumentParser(description='PyEXE (built-in)');
+    parser.add_argument('--build',action='store_true',help='Create a PyEXE binary from a python script');
+    parser.add_argument('--interactive','-i',action='store_true',help='Load interactive interpreter.');
+    parser.add_argument('files', nargs='*',help='Input file path(s)');
+    parser.add_argument('--output','--out','--outfile','-o', help='Output file path');
+    parser.add_argument('-c',help='code to be ran');
+    args=parser.parse_args(args);
+    if args.build:
+        print('running build');
+        build(args);
+    elif args.interactive:
+        inter=Interactive();
+        inter.start();
+    elif args.c:
+        thecode=args.c;
+        compiler=Interpreter();
+        compiler.init(thecode);
+        compiler.run();
+    else:
+        processFiles(args.files);
+    ##endif
+##end
+def build(args):
+    print(args.files);
+##end
 def processFiles(files:list[str]):
     for i in range(len(files)):
         fn=files[i-1];
         try:
-            exe_file_reader=file_reader(fn,'elf');
-            print(exe_file_reader.read_header());
+            if (fn.endswith('.py') or fn.endswith('.pyw')):
+                thefile=open(fn,mode="r");
+                theexecute=Interpreter();
+                theexecute.init(thefile.read());
+                theexecute.run();
+            else:
+                #check if its an ascii executable (it might be for linux)
+                thefile=open(fn,mode="r");
+                if e:
+                    theexecute=Interpreter();
+                    theexecute.init(thefile.read());
+                    theexecute.run();
+                else:
+                    exe_file_reader=file_reader(fn,'elf');
+                    print(exe_file_reader.read_header());
+                ##endif
+            ##endif
         except Exception as e:
             print(e);
         ##endtry
     ##end
 ##end
-
 def main(argc:int,argv:list[str]):
     if (argc<2):
         print('No input file(s) specified!');
+        inter=Interactive();
+        inter.start();
     else:
         args=argv[1:];
-        processFiles(args);
+        processArgs(args);
     ##endif
 ##end
 main(len(sys.argv),sys.argv);
