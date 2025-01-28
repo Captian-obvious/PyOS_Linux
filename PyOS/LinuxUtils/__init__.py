@@ -333,3 +333,6 @@ def read_cfg(path):
     ##endif
     return jsonDecode(data.decode('utf-8'));
 ##end
+def read_conf(path):
+    pass;
+##end

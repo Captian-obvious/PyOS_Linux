@@ -106,8 +106,6 @@ def copy_files(src,dest,onprogress=None):
     if (rootdir==None):
         return False;
     else:
-        #This will begin a full disk scan once ran, if any part of it fails, it calls panic.
-        #*this could take a while*
         curCount=0;
         finalCount=0;
         for root,dirs,files in linux.os.walk(src):
