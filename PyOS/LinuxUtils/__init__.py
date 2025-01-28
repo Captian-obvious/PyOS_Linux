@@ -3,6 +3,7 @@ from .. import UI as uiw;
 import json,math,os,time;
 import threading as task;
 import subprocess as runner;
+import configparser;
 from . import psutils as psutils;
 import sys;
 import ctypes as c;
@@ -334,5 +335,13 @@ def read_cfg(path):
     return jsonDecode(data.decode('utf-8'));
 ##end
 def read_conf(path):
-    pass;
+    conf=configparser.ConfigParser();
+    conf.read(path);
+    conf_dict={};
+    for section in conf.sections():
+        conf_dict[section]={};
+        for k,v in conf.items(section):
+            conf_dict[section][k]=v;
+        ##end
+    ##end
 ##end
