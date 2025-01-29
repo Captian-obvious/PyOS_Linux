@@ -29,9 +29,9 @@ def init(win,cfg,usr):
         },
     };
     homedir=linux.os.path.expanduser("~");
-    if not (os.path.exists(homedir+"/pyde/main.conf")):
-        if not os.path.exists(homedir+"/pyde"):
-            os.mkdir(homedir+"/pyde");
+    if not (linux.os.path.exists(homedir+"/pyde/main.conf")):
+        if not linux.os.path.exists(homedir+"/pyde"):
+            linux.os.mkdir(homedir+"/pyde");
         ##endif
         linux.write_conf(homedir+"/pyde/main.conf",default_conf);
     ##endif
