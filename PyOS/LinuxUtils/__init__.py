@@ -347,19 +347,19 @@ def read_conf(path):
     return conf_dict;
 ##end
 def write_conf(path,newconf):
-    conf = configparser.ConfigParser();
+    conf=configparser.ConfigParser();
     # Update existing configuration with newconf values
     conf.read(path);
-    for section, section_data in newconf.items():
+    for section,section_data in newconf.items():
         if not conf.has_section(section):
             conf.add_section(section);
         ##endif
-        for key, value in section_data.items():
-            conf.set(section, key, value);
+        for key,value in section_data.items():
+            conf.set(section,key,value);
         ##end
     ##end
     # Write the updated configuration back to the file
-    with open(path, 'w') as cfgfile:
+    with open(path,'w') as cfgfile:
         conf.write(cfgfile);
     ##endwith
 ##end
