@@ -349,7 +349,11 @@ def read_conf(path):
 def write_conf(path,newconf):
     conf=configparser.ConfigParser();
     # Update existing configuration with newconf values
-    conf.read(path);
+    if os.path.exists(path):
+        conf.read(path);
+    else:
+        print("File does not exist, write will create it and overwrite any configurations present");
+    ##endif
     for section,section_data in newconf.items():
         if not conf.has_section(section):
             conf.add_section(section);

@@ -35,6 +35,13 @@ def welcome_to_PyOS(root):
     canvaswidth=cvs.winfo_width();
     canvasheight=cvs.winfo_height();
     texts=[];
+    homedir=os.path.expanduser("~");
+    if not (os.path.exists(homedir+"/pyde/main.conf")):
+        if not os.path.exists(homedir+"/pyde"):
+            os.mkdir(homedir+"/pyde");
+        ##endif
+        linux.write_conf(homedir+"/pyde/main.conf",default_conf);
+    ##endif
     def draw_p1():
         texts.append(cvs.create_text(canvaswidth*.5,0,text='Welcome to PyOS!',font=('Ubuntu',20),anchor=ui.N,fill='#fff'));
         texts.append(cvs.create_text(0,canvasheight*.2,text='An operating system written entirely in Python!',font=('Ubuntu',10),anchor=ui.NW,fill='#fff'));
@@ -129,7 +136,7 @@ def live_setup(root,canvas):
     var5=ui.IntVar(root,0);
     inst_progress=ui.IntVar(root,0);
     def cancel_cmd():
-        #For now also just quits the program, there isnt any shutdown system yet.
+        #For now also just quits the program, there isnt any shutdown system yet. - :X: there is
         lib_main.shutdown(config);
     ##end
     def draw_p1():

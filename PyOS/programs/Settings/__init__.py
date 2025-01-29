@@ -3,7 +3,7 @@ import tkinter.ttk as ttk;
 from PIL import Image,ImageTk;
 import tkinter.messagebox as dialogs;
 import threading as task;
-import os,sys,time;
+import configparser,os,sys,time;
 from . import pages as pg;
 global config,desktopWin,desktops,bgImg,imported;
 config={};
@@ -11,6 +11,35 @@ desktopWin=None;
 desktops=None;
 imported=False;
 thisdir=os.path.dirname(os.path.realpath(__file__));
+def read_conf(path):
+    conf=configparser.ConfigParser();
+    conf.read(path);
+    conf_dict={};
+    for section in conf.sections():
+        conf_dict[section]={};
+        for k,v in conf.items(section):
+            conf_dict[section][k]=v;
+        ##end
+    ##end
+    return conf_dict;
+##end
+def write_conf(path,newconf):
+    conf=configparser.ConfigParser();
+    # Update existing configuration with newconf values
+    conf.read(path);
+    for section,section_data in newconf.items():
+        if not conf.has_section(section):
+            conf.add_section(section);
+        ##endif
+        for key,value in section_data.items():
+            conf.set(section,key,value);
+        ##end
+    ##end
+    # Write the updated configuration back to the file
+    with open(path,'w') as cfgfile:
+        conf.write(cfgfile);
+    ##endwith
+##end
 def init(win,cfg,desks):
     global config,desktopWin,desktops;
     config=cfg;
@@ -25,6 +54,7 @@ def main(argc,argv):
     root.iconphoto(True,tk.PhotoImage(master=root,file=thisdir+"/favicon.png"));
     root.config(bg="#333");
     valid_terminal_settings=['brightness','background','font','accent1','accent2','accent3'];
+    current_config=read_conf(os.path.expanduser("~")+"/pyde/main.conf");
     if argc>1:
         if (argv[1]=='--cfg'):
             if argc>3:
