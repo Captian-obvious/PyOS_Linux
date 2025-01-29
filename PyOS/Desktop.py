@@ -341,7 +341,9 @@ def startSessionAfterInit(IsLive=False):
     #Create initial start ui
     uiw.print_info('Loading UI...');
     root=ui.Canvas(mainwin,bg='#333');
-    com.create_bg_img(mainwin,root,thisdir+'/assets/backgrounds/background.png');
+    homedir=os.path.expanduser("~");
+    conf=linux.read_conf(homedir+"/pyde/main.conf");
+    com.create_bg_img(mainwin,root,conf['Main']["background"]);
     root.place(relx=.5,rely=.5,relwidth=1,relheight=1,anchor=ui.CENTER);
     mainwin.update();
     root.update();
@@ -430,11 +432,13 @@ def new_desktop(screenname):
     newroot.setAttribute('fullscreen',True);
     newroot.update();
     global mainwin,config,desktop_force_show;
+    homedir=os.path.expanduser("~");
+    conf=linux.read_conf(homedir+"/pyde/main.conf");
     #Create the desktop
     desktop=Desktop(newroot,bg='#333');
     desktop.place(relx=.5,rely=.5,relwidth=1,relheight=1,anchor=ui.CENTER);
     desktop.update();
-    theimg=thisdir+'/assets/backgrounds/background.png'
+    theimg=conf["Main"]["background"];
     desktop.set_background(theimg);
     desktops.append(desktop);
     canvaswidth=desktop.winfo_width();
@@ -602,11 +606,13 @@ def goto_desktop():
     except Exception as err:
         uiw.print_info('Unable to get screens: '+str(err));
     ##endtry
+    homedir=os.path.expanduser("~");
+    conf=linux.read_conf(homedir+"/pyde/main.conf");
     #Create the desktop
     desktop=Desktop(mainwin,bg='#333');
     desktop.place(relx=.5,rely=.5,relwidth=1,relheight=1,anchor=ui.CENTER);
     desktop.update();
-    theimg=thisdir+'/assets/backgrounds/background.png'
+    theimg=conf["Main"]["background"];
     desktop.set_background(theimg);
     desktops.append(desktop);
     canvaswidth=desktop.winfo_width();
