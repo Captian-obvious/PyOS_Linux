@@ -41,7 +41,9 @@ def main(argc,argv):
             ##endif
         ##endif
         if argv[1] in valid_terminal_settings:
-            pg.load_page(settings_sidebar.item(selected)["text"],root,desktopWin,desktops,config);
+            if args[1]=="background":
+                pg.load_page("Background",root,config);
+            ##endif
         ##endif
     ##endif
     s=ttk.Style(master=root);
