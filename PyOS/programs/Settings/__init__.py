@@ -3,7 +3,7 @@ import tkinter.ttk as ttk;
 from PIL import Image,ImageTk;
 import tkinter.messagebox as dialogs;
 import threading as task;
-import configparser,os,sys,time;
+import os,sys,time;
 from . import pages as pg;
 read_conf=pg.read_conf;
 write_conf=pg.write_conf;
@@ -41,7 +41,7 @@ def main(argc,argv):
             ##endif
         ##endif
         if argv[1] in valid_terminal_settings:
-            if args[1]=="background":
+            if argv[1]=="background":
                 pg.load_page("Background",root,config);
             ##endif
         ##endif

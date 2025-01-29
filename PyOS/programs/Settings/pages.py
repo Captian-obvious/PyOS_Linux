@@ -3,7 +3,7 @@ import tkinter.ttk as ttk;
 from PIL import Image,ImageTk;
 import tkinter.messagebox as dialogs;
 import threading as task;
-import os,sys,time;
+import configparser,os,sys,time;
 def read_conf(path):
     conf=configparser.ConfigParser();
     conf.read(path);
