@@ -101,8 +101,6 @@ def configure_(name,value):
     if name=='brightness':
         pass;
     elif name=='background' and value!='':
-        for i in range(len(desktops)):
-            desktops[i-1].set_background(value);
-        ##end
+        pass;
     ##endif
 ##end

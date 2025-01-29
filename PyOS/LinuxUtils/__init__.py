@@ -344,4 +344,16 @@ def read_conf(path):
             conf_dict[section][k]=v;
         ##end
     ##end
+    return conf_dict;
+##end
+def write_conf(path,newconf):
+    conf=configparser.ConfigParser();
+    conf.read(path);
+    conf_dict={};
+    for section in conf.sections():
+        conf_dict[section]={};
+        for k,v in conf.items(section):
+            conf_dict[section][k]=v;
+        ##end
+    ##end
 ##end
