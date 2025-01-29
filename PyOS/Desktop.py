@@ -23,6 +23,18 @@ def init(win,cfg,usr):
     mainwin=win;
     config=cfg;
     current_usr=usr;
+    default_conf={
+        "Main":{
+            "background":thisdir+"/assets/backgrounds/background.png",
+        },
+    };
+    homedir=os.path.expanduser("~");
+    if not (os.path.exists(homedir+"/pyde/main.conf")):
+        if not os.path.exists(homedir+"/pyde"):
+            os.mkdir(homedir+"/pyde");
+        ##endif
+        linux.write_conf(homedir+"/pyde/main.conf",default_conf);
+    ##endif
 ##end
 
 def welcome_to_PyOS(root):
@@ -35,13 +47,6 @@ def welcome_to_PyOS(root):
     canvaswidth=cvs.winfo_width();
     canvasheight=cvs.winfo_height();
     texts=[];
-    homedir=os.path.expanduser("~");
-    if not (os.path.exists(homedir+"/pyde/main.conf")):
-        if not os.path.exists(homedir+"/pyde"):
-            os.mkdir(homedir+"/pyde");
-        ##endif
-        linux.write_conf(homedir+"/pyde/main.conf",default_conf);
-    ##endif
     def draw_p1():
         texts.append(cvs.create_text(canvaswidth*.5,0,text='Welcome to PyOS!',font=('Ubuntu',20),anchor=ui.N,fill='#fff'));
         texts.append(cvs.create_text(0,canvasheight*.2,text='An operating system written entirely in Python!',font=('Ubuntu',10),anchor=ui.NW,fill='#fff'));
