@@ -529,7 +529,7 @@ def new_desktop(screenname):
                     if conf["Appearance"]["dock_orientation"]=="horizontal":
                         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-(dockheight-i)}");
                     else:
-                        dock.geometry(f"{dwidth}x{dheight}+{0-i}+{doffset}");
+                        dock.geometry(f"{dwidth}x{dheight}+{0-(dockheight-i)}+{doffset}");
                     ##endif
                     newroot.update();
                     dock.update();
@@ -543,7 +543,7 @@ def new_desktop(screenname):
                     if conf["Appearance"]["dock_orientation"]=="horizontal":
                         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-i}");
                     else:
-                        dock.geometry(f"{dwidth}x{dheight}+{0-(dockheight-i)}+0");
+                        dock.geometry(f"{dwidth}x{dheight}+{0-i}+0");
                     ##endif
                     newroot.update();
                     dock.update();
@@ -718,7 +718,7 @@ def goto_desktop():
                     if conf["Appearance"]["dock_orientation"]=="horizontal":
                         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-(dockheight-i)}");
                     else:
-                        dock.geometry(f"{dwidth}x{dheight}+{0-i}+{doffset}");
+                        dock.geometry(f"{dwidth}x{dheight}+{0-(dockheight-i)}+{doffset}");
                     ##endif
                     mainwin.update();
                     dock.update();
@@ -732,7 +732,7 @@ def goto_desktop():
                     if conf["Appearance"]["dock_orientation"]=="horizontal":
                         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-i}");
                     else:
-                        dock.geometry(f"{dwidth}x{dheight}+{0-(dockheight-i)}+0");
+                        dock.geometry(f"{dwidth}x{dheight}+{0-i}+0");
                     ##endif
                     mainwin.update();
                     dock.update();
@@ -775,7 +775,7 @@ def goto_desktop():
     ##endif
     if conf["Appearance"]["dock_orientation"]=="vertical":
         dwidth=dockheight;
-        dheight=canvasheight-96;
+        dheight=canvasheight-48;
         doffset=0;
         geom1=False;
     ##endif
