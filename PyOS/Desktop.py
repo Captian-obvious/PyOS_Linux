@@ -27,6 +27,9 @@ def init(win,cfg,usr):
         "Main":{
             "background":thisdir+"/assets/backgrounds/background.png",
         },
+        "Appearance":{
+            "dock_orientation":"horizontal",
+        },
     };
     homedir=linux.os.path.expanduser("~");
     if not (linux.os.path.exists(homedir+"/pyde/main.conf")):
@@ -773,6 +776,9 @@ class Dock(ui.Toplevel):
         self.canvas.pack(expand=1,fill=ui.BOTH);
     ##end
     def add_icon(self,icon_path,name='',appid=0,exec=None,isPinned=False):
+        homedir=linux.os.path.expanduser("~");
+        conf=linux.read_conf(homedir+"/pyde/main.conf");
+        orientation=conf["Appearance"]["dock_orientation"];
         width=self.faviconsize;
         self.ogn_img=ogn_img=uiw.Image.open(icon_path);
         aspect_ratio=ogn_img.width/ogn_img.height;
@@ -781,6 +787,10 @@ class Dock(ui.Toplevel):
         id=len(self.icons)+1;
         x1=48+(id-1)*self.iconsize;
         y1=0;
+        if orientation=='vertical':
+            x1=0;
+            y1=48+(id-1)*self.iconsize;
+        ##endif
         x2=x1+self.iconsize;
         y2=y1+self.iconsize;  # Fixed y position with padding
         y3=self.linked_desktop.winfo_height()-48;
