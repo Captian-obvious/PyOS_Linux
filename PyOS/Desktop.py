@@ -529,7 +529,7 @@ def new_desktop(screenname):
                     if conf["Appearance"]["dock_orientation"]=="horizontal":
                         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-(dockheight-i)}");
                     else:
-                        dock.geometry(f"{dwidth}x{dheight}+{0-(dockheight-i)}+{doffset}");
+                        dock.geometry(f"{dwidth}x{dheight}+{0-i}+{doffset}");
                     ##endif
                     newroot.update();
                     dock.update();
@@ -543,7 +543,7 @@ def new_desktop(screenname):
                     if conf["Appearance"]["dock_orientation"]=="horizontal":
                         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-i}");
                     else:
-                        dock.geometry(f"{dwidth}x{dheight}+{0-i}+0");
+                        dock.geometry(f"{dwidth}x{dheight}+{0-(dockheight-i)}+0");
                     ##endif
                     newroot.update();
                     dock.update();
@@ -718,7 +718,7 @@ def goto_desktop():
                     if conf["Appearance"]["dock_orientation"]=="horizontal":
                         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-(dockheight-i)}");
                     else:
-                        dock.geometry(f"{dwidth}x{dheight}+{0-(dockheight-i)}+{doffset}");
+                        dock.geometry(f"{dwidth}x{dheight}+{0-i}+{doffset}");
                     ##endif
                     mainwin.update();
                     dock.update();
@@ -732,7 +732,7 @@ def goto_desktop():
                     if conf["Appearance"]["dock_orientation"]=="horizontal":
                         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-i}");
                     else:
-                        dock.geometry(f"{dwidth}x{dheight}+{0-i}+0");
+                        dock.geometry(f"{dwidth}x{dheight}+{0-(dockheight-i)}+0");
                     ##endif
                     mainwin.update();
                     dock.update();
@@ -741,6 +741,7 @@ def goto_desktop():
                     ##endif
                 ##end
             ##endif
+            opendb2=False;
         ##endif
     ##end
     def dock_btn_click(event):
