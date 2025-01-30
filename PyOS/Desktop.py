@@ -526,7 +526,7 @@ def new_desktop(screenname):
             if dock_shown:
                 dock_shown=False;
                 for i in range(dockheight):
-                    if conf["Appearance"]["orientation"]=="horizontal":
+                    if conf["Appearance"]["dock_orientation"]=="horizontal":
                         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-(dockheight-i)}");
                     else:
                         dock.geometry(f"{dwidth}x{dheight}+{canvaswidth-(dockheight-i)}+{doffset}");
@@ -540,7 +540,7 @@ def new_desktop(screenname):
             else:
                 dock_shown=True;
                 for i in range(dockheight):
-                    if conf["Appearance"]["orientation"]=="horizontal":
+                    if conf["Appearance"]["dock_orientation"]=="horizontal":
                         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-i}");
                     else:
                         dock.geometry(f"{dwidth}x{dheight}+{canvaswidth-i}+{doffset}");
@@ -715,7 +715,7 @@ def goto_desktop():
             if dock_shown:
                 dock_shown=False;
                 for i in range(dockheight):
-                    if conf["Appearance"]["orientation"]=="horizontal":
+                    if conf["Appearance"]["dock_orientation"]=="horizontal":
                         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-(dockheight-i)}");
                     else:
                         dock.geometry(f"{dwidth}x{dheight}+{canvaswidth-(dockheight-i)}+{doffset}");
@@ -729,7 +729,7 @@ def goto_desktop():
             else:
                 dock_shown=True;
                 for i in range(dockheight):
-                    if conf["Appearance"]["orientation"]=="horizontal":
+                    if conf["Appearance"]["dock_orientation"]=="horizontal":
                         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-i}");
                     else:
                         dock.geometry(f"{dwidth}x{dheight}+{canvaswidth-i}+{doffset}");
