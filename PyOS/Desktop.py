@@ -526,7 +526,11 @@ def new_desktop(screenname):
             if dock_shown:
                 dock_shown=False;
                 for i in range(dockheight):
-                    dock.geometry(f"{canvaswidth-96}x{dockheight}+48+{canvasheight-(dockheight-i)}");
+                    if conf["Appearence"]["orientation"]=="horizontal":
+                        dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-(dockheight-i)}");
+                    else:
+                        dock.geometry(f"{dwidth}x{dheight}+{canvaswidth-(dockheight-i)}+{doffset}");
+                    ##endif
                     newroot.update();
                     dock.update();
                     if not desktop_force_show:
@@ -536,7 +540,11 @@ def new_desktop(screenname):
             else:
                 dock_shown=True;
                 for i in range(dockheight):
-                    dock.geometry(f"{canvaswidth-96}x{dockheight}+48+{canvasheight-i}");
+                    if conf["Appearence"]["orientation"]=="horizontal":
+                        dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-i}");
+                    else:
+                        dock.geometry(f"{dwidth}x{dheight}+{canvaswidth-i}+{doffset}");
+                    ##endif
                     newroot.update();
                     dock.update();
                     if not desktop_force_show:
@@ -688,7 +696,11 @@ def goto_desktop():
             if dock_shown:
                 dock_shown=False;
                 for i in range(dockheight):
-                    dock.geometry(f"{canvaswidth-96}x{dockheight}+48+{canvasheight-(dockheight-i)}");
+                    if conf["Appearence"]["orientation"]=="horizontal":
+                        dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-(dockheight-i)}");
+                    else:
+                        dock.geometry(f"{dwidth}x{dheight}+{canvaswidth-(dockheight-i)}+{doffset}");
+                    ##endif
                     mainwin.update();
                     dock.update();
                     if not desktop_force_show:
@@ -698,7 +710,11 @@ def goto_desktop():
             else:
                 dock_shown=True;
                 for i in range(dockheight):
-                    dock.geometry(f"{canvaswidth-96}x{dockheight}+48+{canvasheight-i}");
+                    if conf["Appearence"]["orientation"]=="horizontal":
+                        dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-i}");
+                    else:
+                        dock.geometry(f"{dwidth}x{dheight}+{canvaswidth-i}+{doffset}");
+                    ##endif
                     mainwin.update();
                     dock.update();
                     if not desktop_force_show:
@@ -730,10 +746,29 @@ def goto_desktop():
         right_click_menu.focus_force();
     ##end
     dock_btn=desktop.create_image(0,canvasheight,image=dock_img,anchor=ui.SW);
-    dock=Dock(desktop,desktop,bg='#333',width=canvaswidth-96,height=dockheight);
+    dwidth=0;
+    dheight=0;
+    doffset=48;
+    geom1=True;
+    if conf["Appearence"]["dock_orientation"]=="horizontal":
+        dwidth=canvaswidth-96;
+        dheight=dockheight;
+        doffset=48;
+    ##endif
+    if conf["Appearence"]["dock_orientation"]=="vertical":
+        dwidth=dockheight;
+        dheight=canvasheight-96;
+        doffset=0;
+        geom1=False;
+    ##endif
+    dock=Dock(desktop,desktop,bg='#333',width=dheight,height=dheight);
     dock.retrieve_pinned();
     dock.update();
-    dock.geometry(f"{canvaswidth-96}x{dockheight}+48+{canvasheight-dockheight}");
+    if geom1:
+        dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-dockheight}");
+    else:
+        dock.geometry(f"{dwidth}x{dheight}+{canvaswidth-dockheight}+{doffset}");
+    ##endif
     dash_btn=dock.canvas.create_image(0,0,image=dash_img,anchor=ui.NW);
     
     desktop.tag_bind(dock_btn,'<Button-1>',dock_btn_click);
