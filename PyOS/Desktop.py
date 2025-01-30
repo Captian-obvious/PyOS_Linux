@@ -529,7 +529,7 @@ def new_desktop(screenname):
                     if conf["Appearance"]["dock_orientation"]=="horizontal":
                         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-(dockheight-i)}");
                     else:
-                        dock.geometry(f"{dwidth}x{dheight}+{canvaswidth-(dockheight-i)}+{doffset}");
+                        dock.geometry(f"{dwidth}x{dheight}+{0-(dockheight-i)}+{doffset}");
                     ##endif
                     newroot.update();
                     dock.update();
@@ -543,7 +543,7 @@ def new_desktop(screenname):
                     if conf["Appearance"]["dock_orientation"]=="horizontal":
                         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-i}");
                     else:
-                        dock.geometry(f"{dwidth}x{dheight}+{canvaswidth-i}+{doffset}");
+                        dock.geometry(f"{dwidth}x{dheight}+{0-i}+{doffset}");
                     ##endif
                     newroot.update();
                     dock.update();
