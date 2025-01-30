@@ -718,7 +718,7 @@ def goto_desktop():
                     if conf["Appearance"]["dock_orientation"]=="horizontal":
                         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-(dockheight-i)}");
                     else:
-                        dock.geometry(f"{dwidth}x{dheight}+{canvaswidth-(dockheight-i)}+{doffset}");
+                        dock.geometry(f"{dwidth}x{dheight}+{0-(dockheight-i)}+{doffset}");
                     ##endif
                     mainwin.update();
                     dock.update();
@@ -732,7 +732,7 @@ def goto_desktop():
                     if conf["Appearance"]["dock_orientation"]=="horizontal":
                         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-i}");
                     else:
-                        dock.geometry(f"{dwidth}x{dheight}+{canvaswidth-i}+{doffset}");
+                        dock.geometry(f"{dwidth}x{dheight}+{0-i}+{doffset}");
                     ##endif
                     mainwin.update();
                     dock.update();
