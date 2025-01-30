@@ -529,7 +529,7 @@ def new_desktop(screenname):
                     if conf["Appearance"]["dock_orientation"]=="horizontal":
                         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-(dockheight-i)}");
                     else:
-                        dock.geometry(f"{dwidth}x{dheight}+{0-(dockheight-i)}+{doffset}");
+                        dock.geometry(f"{dwidth}x{dheight}+{0-i}+{doffset}");
                     ##endif
                     newroot.update();
                     dock.update();
@@ -543,7 +543,7 @@ def new_desktop(screenname):
                     if conf["Appearance"]["dock_orientation"]=="horizontal":
                         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-i}");
                     else:
-                        dock.geometry(f"{dwidth}x{dheight}+{0-i}+{doffset}");
+                        dock.geometry(f"{dwidth}x{dheight}+{0-(dockheight-i)}+0");
                     ##endif
                     newroot.update();
                     dock.update();
@@ -597,7 +597,7 @@ def new_desktop(screenname):
     if geom1:
         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-dockheight}");
     else:
-        dock.geometry(f"{dwidth}x{dheight}+{canvaswidth-dockheight}+{doffset}");
+        dock.geometry(f"{dwidth}x{dheight}+0+{doffset}");
     ##endif
     desktop.tag_bind(dock_btn,'<Button-1>',dock_btn_click);
     desktop.tag_bind(dock_btn,'<Enter>',dock_btn_hover);
@@ -718,7 +718,7 @@ def goto_desktop():
                     if conf["Appearance"]["dock_orientation"]=="horizontal":
                         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-(dockheight-i)}");
                     else:
-                        dock.geometry(f"{dwidth}x{dheight}+{0-(dockheight-i)}+{doffset}");
+                        dock.geometry(f"{dwidth}x{dheight}+{0-i}+{doffset}");
                     ##endif
                     mainwin.update();
                     dock.update();
@@ -732,7 +732,7 @@ def goto_desktop():
                     if conf["Appearance"]["dock_orientation"]=="horizontal":
                         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-i}");
                     else:
-                        dock.geometry(f"{dwidth}x{dheight}+{0-i}+{doffset}");
+                        dock.geometry(f"{dwidth}x{dheight}+{0-(dockheight-i)}+0");
                     ##endif
                     mainwin.update();
                     dock.update();
@@ -741,7 +741,6 @@ def goto_desktop():
                     ##endif
                 ##end
             ##endif
-            opendb2=False;
         ##endif
     ##end
     def dock_btn_click(event):
@@ -786,7 +785,7 @@ def goto_desktop():
     if geom1:
         dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-dockheight}");
     else:
-        dock.geometry(f"{dwidth}x{dheight}+{canvaswidth-dockheight}+{doffset}");
+        dock.geometry(f"{dwidth}x{dheight}+0+{doffset}");
     ##endif
     dash_btn=dock.canvas.create_image(0,0,image=dash_img,anchor=ui.NW);
     
