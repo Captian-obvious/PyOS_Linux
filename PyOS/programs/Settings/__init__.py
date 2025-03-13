@@ -58,7 +58,6 @@ def main(argc,argv):
     settings_sidebar.i8=icon8=tk.PhotoImage(master=root,file=thisdir+'/assets/applications.png');
     settings_sidebar.i9=icon9=tk.PhotoImage(master=root,file=thisdir+'/assets/privacy.png');
     settings_sidebar.i10=icon10=tk.PhotoImage(master=root,file=thisdir+'/assets/accounts.png');
-
     settings_sidebar.i11=icon11=tk.PhotoImage(master=root,file=thisdir+'/assets/sharing.png');
     settings_sidebar.i12=icon12=tk.PhotoImage(master=root,file=thisdir+'/assets/sound.png');
     settings_sidebar.i13=icon13=tk.PhotoImage(master=root,file=thisdir+'/assets/power.png');
