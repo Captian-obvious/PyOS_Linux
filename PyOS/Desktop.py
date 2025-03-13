@@ -848,6 +848,9 @@ class Dock(ui.Toplevel):
         x2=x1+self.iconsize;
         y2=y1+self.iconsize;  # Fixed y position with padding
         y3=self.linked_desktop.winfo_height()-48;
+        if orientation=='vertical':
+            y3=y2-self.iconsize//2;
+        ##end
         font_size=9;
         background=self.canvas.create_rectangle(x1,y1,x2,y2,fill='#333',outline='#333');
         icon_widget=self.canvas.create_image(x1+self.iconsize//2,y1+self.iconsize//2,image=icon,anchor=ui.CENTER);
