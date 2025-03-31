@@ -30,6 +30,7 @@ def init(win,cfg,usr):
         "Appearance":{
             "dock_orientation":"horizontal",
         },
+        "icons":{}
     };
     homedir=linux.os.path.expanduser("~");
     if not (linux.os.path.exists(homedir+"/pyde/main.conf")):
@@ -789,7 +790,43 @@ def goto_desktop():
         dock.geometry(f"{dwidth}x{dheight}+0+{doffset}");
     ##endif
     dash_btn=dock.canvas.create_image(0,0,image=dash_img,anchor=ui.NW);
-    
+    def reload_desk(event):
+        dock.destroy();
+        # Fetch updated configuration
+        homedir = linux.os.path.expanduser("~");
+        conf = linux.read_conf(homedir + "/pyde/main.conf");
+        # Determine canvas dimensions
+        #canvaswidth = self.winfo_width();
+        #canvasheight = self.winfo_height();
+        # Initialize variables
+        dwidth, dheight, doffset = 0, 0, 48;
+        geom1 = True;  # Determine geometry orientation
+        # Adjust dock dimensions based on configuration
+        if conf["Appearance"]["dock_orientation"] == "horizontal":
+            dwidth = canvaswidth - 96;
+            dheight = dockheight;
+            doffset = 48;
+        elif conf["Appearance"]["dock_orientation"] == "vertical":
+            dwidth = dockheight;
+            dheight = canvasheight - 48;
+            doffset = 0;
+            geom1 = False;
+        ##endif
+        # Create a new Dock instance
+        dock = Dock(self, self, bg='#333', width=dwidth, height=dheight);
+        # Retrieve pinned apps and reload dock state
+        dock.retrieve_pinned();
+        dock.reload();  # Call the reload method to refresh dock contents
+        # Set dock geometry
+        if geom1:
+            dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-dheight}");
+        else:
+            dock.geometry(f"{dwidth}x{dheight}+0+{doffset}");
+        ##end
+        # Update the desktop appearance
+        dock.update();
+    ##end
+    right_click_menu.add_command(label="Reload Desktop",command=reload_desk);
     desktop.tag_bind(dock_btn,'<Button-1>',dock_btn_click);
     desktop.tag_bind(dock_btn,'<Enter>',dock_btn_hover);
     desktop.tag_bind(dock_btn,'<Leave>',dock_btn_hover_leave);
@@ -829,7 +866,7 @@ class Dock(ui.Toplevel):
         self.canvas=ui.Canvas(self,bg=bg,width=width,height=height);
         self.canvas.pack(expand=1,fill=ui.BOTH);
     ##end
-    def add_icon(self,icon_path,name='',appid=0,exec=None,isPinned=False):
+    def add_icon(self,icon_path,name='',appid=0,exec=None,isPinned=False,pid=None,opened=False):
         homedir=linux.os.path.expanduser("~");
         conf=linux.read_conf(homedir+"/pyde/main.conf");
         orientation=conf["Appearance"]["dock_orientation"];
@@ -894,7 +931,8 @@ class Dock(ui.Toplevel):
             'exec':exec, #command ran when clicked
             'selected':False,
             'pinned':isPinned,
-            'opened':False, #if true prevents 'exec' from running.
+            'opened':opened, #if true prevents 'exec' from running.
+            'pid':pid,
             'open_bar':None,
         };
         global icon_debounce;
@@ -959,6 +997,67 @@ class Dock(ui.Toplevel):
         self.canvas.tag_bind(background,'<Leave>',on_leave);
         self.canvas.tag_bind(icon_widget,'<Leave>',on_leave);
         self.icons.append(ico_desc);
+    ##end
+    def reload(self):
+        # Clear the canvas
+        self.canvas.delete("all")
+        # Retain previous icons for reuse
+        previcons=self.icons;
+        self.icons=[];
+        # Reload configuration
+        homedir=linux.os.path.expanduser("~");
+        conf=linux.read_conf(homedir + "/pyde/main.conf");
+        # Update dock settings
+        # Re-add icons based on the updated configuration
+        for icon in previcons:
+            if icon["opened"]:
+                self.add_icon(
+                    icon_path=icon["icon_path"],
+                    name=icon["name"],
+                    appid=icon["appid"],
+                    exec=icon["exec"],
+                    isPinned=icon["isPinned"],
+                    pid=icon["pid"],
+                    opened=icon["opened"]
+                );
+            ##endif
+        ##end
+        for icon_conf in conf["Dock"]["icons"]:
+            # Check if the icon is in the previous icons list
+            matching_icon=next((icon for icon in previcons if icon["icon_path"]==icon_conf["path"]),None);
+            if matching_icon:
+                # Use the existing icon's properties
+                icon_data = {
+                    'icon_path': matching_icon["icon_path"],
+                    'name': matching_icon["name"],
+                    'appid': matching_icon["app_id"],
+                    'exec': matching_icon["exec"],
+                    'isPinned': matching_icon["pinned"],
+                    'pid':matching_icon["pid"]
+                };
+            else:
+                # Use the new configuration data
+                icon_data = {
+                    'icon_path': icon_conf["path"],
+                    'name': icon_conf["name"],
+                    'appid': icon_conf["appid"],
+                    'exec': icon_conf["exec"],
+                    'isPinned': icon_conf.get("isPinned", False),
+                    'pid':None #no PID due to new icon
+                };
+            ##endif
+            # Add the icon to the dock
+            self.add_icon(
+                icon_path=icon_data["icon_path"],
+                name=icon_data["name"],
+                appid=icon_data["appid"],
+                exec=icon_data["exec"],
+                isPinned=icon_data["isPinned"],
+                pid=icon_data["pid"]
+            );
+        ##end
+        # Refresh the dock's appearance
+        self.update()
     ##end
     def on_unpin(self,event):
         global icon_debounce;
