@@ -815,7 +815,7 @@ def goto_desktop():
             geom1 = False;
         ##endif
         # Create a new Dock instance
-        dock = Dock(self, self, bg='#333', width=dwidth, height=dheight);
+        dock = Dock(desktop, desktop, bg='#333', width=dwidth, height=dheight);
         # Retrieve pinned apps and reload dock state
         dock.retrieve_pinned();
         dock.reload();  # Call the reload method to refresh dock contents
