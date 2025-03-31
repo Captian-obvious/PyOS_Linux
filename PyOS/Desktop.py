@@ -790,7 +790,7 @@ def goto_desktop():
         dock.geometry(f"{dwidth}x{dheight}+0+{doffset}");
     ##endif
     dash_btn=dock.canvas.create_image(0,0,image=dash_img,anchor=ui.NW);
-    def reload_desk(event):
+    def reload_desk():
         dock.destroy();
         # Fetch updated configuration
         homedir = linux.os.path.expanduser("~");
