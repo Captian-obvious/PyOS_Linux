@@ -781,6 +781,7 @@ def goto_desktop():
         doffset=0;
         geom1=False;
     ##endif
+    global dock;
     dock=Dock(desktop,desktop,bg='#333',width=dheight,height=dheight);
     dock.retrieve_pinned();
     dock.update();
