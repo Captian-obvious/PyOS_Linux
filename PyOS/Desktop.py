@@ -31,7 +31,9 @@ def init(win,cfg,usr):
             "dock_orientation":"horizontal",
         },
         "Dock":{
-            "icons":[]
+            "color":"#333",
+            "theme":"dark",
+            "icon_size":"48",
         }
     };
     homedir=linux.os.path.expanduser("~");
@@ -650,7 +652,7 @@ def goto_desktop():
     desktops.append(desktop);
     canvaswidth=desktop.winfo_width();
     canvasheight=desktop.winfo_height();
-    dockheight=48;
+    dockheight=int(conf["Dock"]["icon_size"] if conf["Dock"]["icon_size"] else 48);
     desktop.di=dock_img=com.ImageTk.PhotoImage(file=thisdir+'/assets/images/dock.png');
     desktop.dhi=dock_hover_img=com.ImageTk.PhotoImage(file=thisdir+'/assets/images/dock_hover.png');
     desktop.dci=dock_click_img=com.ImageTk.PhotoImage(file=thisdir+'/assets/images/dock_click.png');
@@ -803,7 +805,8 @@ def goto_desktop():
         #canvaswidth = self.winfo_width();
         #canvasheight = self.winfo_height();
         # Initialize variables
-        dwidth, dheight, doffset = 0, 0, 48;
+        dockheight=int(conf["Dock"]["icon_size"] if conf["Dock"]["icon_size"] else 48);
+        dwidth, dheight, doffset = 0, 0, dockheight;
         geom1 = True;  # Determine geometry orientation
         # Adjust dock dimensions based on configuration
         if conf["Appearance"]["dock_orientation"] == "horizontal":
@@ -828,6 +831,7 @@ def goto_desktop():
             dock.geometry(f"{dwidth}x{dheight}+0+{doffset}");
         ##end
         # Update the desktop appearance
+        dock_handler(dock,desktop);
         dock.update();
     ##end
     right_click_menu.add_command(label="Reload Desktop",command=reload_desk);
