@@ -1030,40 +1030,6 @@ class Dock(ui.Toplevel):
                 );
             ##endif
         ##end
-        for icon_conf in conf["Dock"]["icons"]:
-            # Check if the icon is in the previous icons list
-            matching_icon=next((icon for icon in previcons if icon["icon_path"]==icon_conf["path"]),None);
-            if matching_icon:
-                # Use the existing icon's properties
-                icon_data = {
-                    'icon_path': matching_icon["icon_path"],
-                    'name': matching_icon["name"],
-                    'appid': matching_icon["app_id"],
-                    'exec': matching_icon["exec"],
-                    'isPinned': matching_icon["pinned"],
-                    'pid':matching_icon["pid"]
-                };
-            else:
-                # Use the new configuration data
-                icon_data = {
-                    'icon_path': icon_conf["path"],
-                    'name': icon_conf["name"],
-                    'appid': icon_conf["appid"],
-                    'exec': icon_conf["exec"],
-                    'isPinned': icon_conf.get("isPinned", False),
-                    'pid':None #no PID due to new icon
-                };
-            ##endif
-            # Add the icon to the dock
-            self.add_icon(
-                icon_path=icon_data["icon_path"],
-                name=icon_data["name"],
-                appid=icon_data["appid"],
-                exec=icon_data["exec"],
-                isPinned=icon_data["isPinned"],
-                pid=icon_data["pid"]
-            );
-        ##end
         # Refresh the dock's appearance
         self.update()
     ##end
