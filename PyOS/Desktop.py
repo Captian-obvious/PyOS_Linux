@@ -30,7 +30,9 @@ def init(win,cfg,usr):
         "Appearance":{
             "dock_orientation":"horizontal",
         },
-        "icons":{}
+        "Dock":{
+            "icons":{}
+        }
     };
     homedir=linux.os.path.expanduser("~");
     if not (linux.os.path.exists(homedir+"/pyde/main.conf")):
