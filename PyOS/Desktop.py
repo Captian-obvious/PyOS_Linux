@@ -31,7 +31,7 @@ def init(win,cfg,usr):
             "dock_orientation":"horizontal",
         },
         "Dock":{
-            "icons":{}
+            "icons":[]
         }
     };
     homedir=linux.os.path.expanduser("~");
