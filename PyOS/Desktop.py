@@ -372,9 +372,11 @@ def startSessionAfterInit(IsLive=False):
 
 def open_files(path=linux.os.getcwd()):
     try:
-        from .programs import Files as f;
-        f.imported=True;
-        f.main(1,[__file__,path]);
+        if linux.os.name=="nt":
+            linux.runner.run(f"pythonw {thisdir}/programs/Files/main.pyw {path}");
+        else:
+            linux.runner.run(f"python {thisdir}/programs/Files/main.pyw {path}");
+        ##endif
     except Exception as err:
         uiw.print_info('Error: '+str(err));
     ##endtry
