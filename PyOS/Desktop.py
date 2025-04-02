@@ -677,6 +677,7 @@ def goto_desktop():
     #Create the desktop
     mainwin.destroy();
     desktop,mainwin=new_desktop();
+    lib_main.set_current_window(mainwin);
 ##end
 global dash_active,dash_canvas,dash_objects,opendb,thisdir;
 thisdir=linux.os.path.dirname(linux.os.path.realpath(__file__));
