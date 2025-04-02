@@ -374,7 +374,8 @@ def open_files(path=linux.os.getcwd()):
         if linux.os.name=="nt":
             linux.runner.run(f"pythonw {thisdir}/programs/Files/main.pyw {path}");
         else:
-            linux.runner.run(f"python {thisdir}/programs/Files/main.pyw {path}");
+            compilerThread=linux.task.Thread(target=lib_main.run_application,args=([f"{thisdir}/programs/Files/main.pyw",path],""));
+            compilerThread.start();
         ##endif
     except Exception as err:
         uiw.print_info('Error: '+str(err));
