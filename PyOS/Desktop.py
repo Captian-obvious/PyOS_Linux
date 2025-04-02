@@ -369,7 +369,6 @@ def startSessionAfterInit(IsLive=False):
         welcome_to_PyOS(root);
     ##endif
 ##end
-
 def open_files(path=linux.os.getcwd()):
     try:
         if linux.os.name=="nt":
@@ -381,7 +380,6 @@ def open_files(path=linux.os.getcwd()):
         uiw.print_info('Error: '+str(err));
     ##endtry
 ##end
-
 def open_application(path,args): #Launch a non-builtin application using its path
     try:
         compilerThread=linux.task.Thread(target=lib_main.run_application,args=([path,*args],));
