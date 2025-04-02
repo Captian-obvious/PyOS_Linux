@@ -452,7 +452,7 @@ def new_desktop(screenname):
     desktops.append(desktop);
     canvaswidth=desktop.winfo_width();
     canvasheight=desktop.winfo_height();
-    dockheight=48;
+    dockheight=int(conf["Dock"]["icon_size"] if conf["Dock"]["icon_size"] else 48);
     desktop.di=dock_img=com.ImageTk.PhotoImage(file=thisdir+'/assets/images/dock.png');
     desktop.dhi=dock_hover_img=com.ImageTk.PhotoImage(file=thisdir+'/assets/images/dock_hover.png');
     desktop.dci=dock_click_img=com.ImageTk.PhotoImage(file=thisdir+'/assets/images/dock_click.png');
@@ -481,7 +481,7 @@ def new_desktop(screenname):
     right_click_menu.add_cascade(label="Applications",menu=application_menu);
     right_click_menu.add_separator();
     right_click_menu.add_command(label='Change background',command=bindFn(open_settings,desktops,args=['--cfg','background']));
-    
+
     right_click_menu.add_separator();
     right_click_menu.add_command(label="Display Settings",command=bindFn(open_settings,desktops,args=['--cfg','display']));
     right_click_menu.add_command(label="Desktop Symbol Settings");
@@ -490,36 +490,24 @@ def new_desktop(screenname):
     def desktop_clicked(event):
         global desktop_force_show;
         #after that we would usually check whats near the click point and if its a shortcut we open it
-        if not (desktop_force_show):
-            newroot.attributes('-topmost',0);
-        ##endif
+        desktop_stacking_order_override(newroot)
     ##end
     def on_desktop_focus(event):
         global desktop_force_show;
-        if not (desktop_force_show):
-            newroot.attributes('-topmost',0);
-        ##endif
+        desktop_stacking_order_override(newroot)
     ##end
     def desktop_back_if_not_shown(event):
         newroot.lower();
     ##end
     def dock_btn_hover(event):
-        global desktop_force_show;
         desktop.itemconfig(dock_btn,image=dock_hover_img);  
         desktop.config(cursor="hand2");
         desktop.update();
-        if not (desktop_force_show):
-            newroot.attributes('-topmost',0);
-        ##endif
     ##end
     def dock_btn_hover_leave(event):
-        global desktop_force_show;
         desktop.itemconfig(dock_btn,image=dock_img);
         desktop.config(cursor="");
         desktop.update();
-        if not (desktop_force_show):
-            newroot.attributes('-topmost',0);
-        ##endif
     ##end
     global debounce,dock_shown,opendb2;
     debounce=False;
@@ -568,7 +556,7 @@ def new_desktop(screenname):
             debounce=True;
             toggle=linux.task.Thread(target=toggle_dock);
             toggle.start();
-            newroot.lower();
+            mainwin.lower();
             linux.time.sleep(.1);
             debounce=False;
             desktop.itemconfig(dock_btn,image=dock_hover_img);
@@ -593,10 +581,11 @@ def new_desktop(screenname):
     ##endif
     if conf["Appearance"]["dock_orientation"]=="vertical":
         dwidth=dockheight;
-        dheight=canvasheight-96;
+        dheight=canvasheight-48;
         doffset=0;
         geom1=False;
     ##endif
+    global dock;
     dock=Dock(desktop,desktop,bg='#333',width=dheight,height=dheight);
     dock.retrieve_pinned();
     dock.update();
@@ -605,13 +594,54 @@ def new_desktop(screenname):
     else:
         dock.geometry(f"{dwidth}x{dheight}+0+{doffset}");
     ##endif
+    dash_btn=dock.canvas.create_image(0,0,image=dash_img,anchor=ui.NW);
+    def reload_desk():
+        global dock;
+        dock.destroy();
+        # Fetch updated configuration
+        homedir = linux.os.path.expanduser("~");
+        conf = linux.read_conf(homedir + "/pyde/main.conf");
+        # Determine canvas dimensions
+        #canvaswidth = self.winfo_width();
+        #canvasheight = self.winfo_height();
+        # Initialize variables
+        dockheight=int(conf["Dock"]["icon_size"] if conf["Dock"]["icon_size"] else 48);
+        dwidth, dheight, doffset = 0, 0, dockheight;
+        geom1 = True;  # Determine geometry orientation
+        # Adjust dock dimensions based on configuration
+        if conf["Appearance"]["dock_orientation"] == "horizontal":
+            dwidth = canvaswidth - 96;
+            dheight = dockheight;
+            doffset = 48;
+        elif conf["Appearance"]["dock_orientation"] == "vertical":
+            dwidth = dockheight;
+            dheight = canvasheight - 48;
+            doffset = 0;
+            geom1 = False;
+        ##endif
+        # Create a new Dock instance
+        dock = Dock(desktop, desktop, bg='#333', width=dwidth, height=dheight);
+        # Retrieve pinned apps and reload dock state
+        dock.retrieve_pinned();
+        dock.reload();  # Call the reload method to refresh dock contents
+        # Set dock geometry
+        if geom1:
+            dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-dheight}");
+        else:
+            dock.geometry(f"{dwidth}x{dheight}+0+{doffset}");
+        ##end
+        # Update the desktop appearance
+        dock_handler(dock,desktop);
+        dock.update();
+    ##end
+    right_click_menu.add_command(label="Reload Desktop",command=reload_desk);
     desktop.tag_bind(dock_btn,'<Button-1>',dock_btn_click);
     desktop.tag_bind(dock_btn,'<Enter>',dock_btn_hover);
     desktop.tag_bind(dock_btn,'<Leave>',dock_btn_hover_leave);
     desktop.bind('<Button-1>',bindFn(desktop_clicked));
     desktop.bind('<Button-3>',bindFn(rc_menu_fn));
     desktop.bind('<FocusIn>',bindFn(on_desktop_focus));
-    mainwin.bind('<FocusIn>',bindFn(on_desktop_focus));
+    newroot.bind('<FocusIn>',bindFn(on_desktop_focus));
     dock.bind('<FocusIn>',bindFn(on_desktop_focus));
     dock.bind('<Button-1>',bindFn(on_desktop_focus));
     dock_handler(dock,desktop);
