@@ -369,6 +369,7 @@ def startSessionAfterInit(IsLive=False):
         welcome_to_PyOS(root);
     ##endif
 ##end
+# opens files app
 def open_files(path=linux.os.getcwd()):
     try:
         if linux.os.name=="nt":
