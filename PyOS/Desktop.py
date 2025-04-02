@@ -436,7 +436,7 @@ def open_settings(desktops,args):
     s.main(len(cmdargs),cmdargs);
 ##end
 
-def new_desktop(screenname):
+def new_desktop(show_dock=True,screenname=None):
     newroot=ui.Window(screenName=screenname);
     newroot.setAttribute('fullscreen',True);
     newroot.update();
@@ -645,6 +645,7 @@ def new_desktop(screenname):
     dock.bind('<FocusIn>',bindFn(on_desktop_focus));
     dock.bind('<Button-1>',bindFn(on_desktop_focus));
     dock_handler(dock,desktop);
+    return desktop,newroot;
 ##end
 
 def get_tasks():
@@ -672,210 +673,9 @@ def goto_desktop():
     except Exception as err:
         uiw.print_info('Unable to get screens: '+str(err));
     ##endtry
-    homedir=linux.os.path.expanduser("~");
-    conf=linux.read_conf(homedir+"/pyde/main.conf");
     #Create the desktop
-    desktop=Desktop(mainwin,bg='#333');
-    desktop.place(relx=.5,rely=.5,relwidth=1,relheight=1,anchor=ui.CENTER);
-    desktop.update();
-    theimg=conf["Main"]["background"];
-    desktop.set_background(theimg);
-    desktops.append(desktop);
-    canvaswidth=desktop.winfo_width();
-    canvasheight=desktop.winfo_height();
-    dockheight=int(conf["Dock"]["icon_size"] if conf["Dock"]["icon_size"] else 48);
-    desktop.di=dock_img=com.ImageTk.PhotoImage(file=thisdir+'/assets/images/dock.png');
-    desktop.dhi=dock_hover_img=com.ImageTk.PhotoImage(file=thisdir+'/assets/images/dock_hover.png');
-    desktop.dci=dock_click_img=com.ImageTk.PhotoImage(file=thisdir+'/assets/images/dock_click.png');
-    desktop.di2=dash_img=com.ImageTk.PhotoImage(file=thisdir+'/assets/images/dash.png');
-    global img;
-    img=desktop.background_image;
-    #img=com.create_bg_img(mainwin,desktop,thisdir+'/assets/backgrounds/background.png');
-    power_menu=ui.Menu(mainwin,tearoff=0,cursor="",fg="#fff",bg="#333",font=("Ubuntu",10));
-    power_menu.add_command(label='Shutdown',command=lambda:lib_main.shutdown(config));
-    power_menu.add_command(label='Restart',command=lambda:lib_main.restart(config));
-    application_menu=ui.Menu(mainwin,tearoff=0,cursor="",fg="#fff",bg="#333",font=("Ubuntu",10));
-    application_menu.add_command(label="Terminal",command=bindFn(lib_main.open_terminal));
-    application_menu.add_command(label="Files",command=open_files);
-    right_click_menu=ui.Menu(mainwin,tearoff=0,cursor="",fg="#fff",bg="#333",font=("Ubuntu",10));
-    right_click_menu.add_command(label='Create new');
-    right_click_menu.add_separator();
-    right_click_menu.add_command(label="Paste");
-    right_click_menu.add_separator();
-    right_click_menu.add_command(label="Select all");
-    right_click_menu.add_separator();
-    right_click_menu.add_command(label="Arrange all");
-    right_click_menu.add_command(label="Arrange by");
-    right_click_menu.add_separator();
-    right_click_menu.add_command(label="Open in files",command=bindFn(open_files,linux.os.path.join(linux.os.path.expanduser("~"),"/Desktop") if linux.os.path.exists(linux.os.path.join(linux.os.path.expanduser("~"),"/Desktop")) else linux.os.getcwd()));
-    right_click_menu.add_command(label='Open in Terminal',command=bindFn(lib_main.open_terminal,linux.os.path.join(linux.os.path.expanduser("~"),"/Desktop") if linux.os.path.exists(linux.os.path.join(linux.os.path.expanduser("~"),"/Desktop")) else linux.os.getcwd()));
-    right_click_menu.add_cascade(label="Applications",menu=application_menu);
-    right_click_menu.add_separator();
-    right_click_menu.add_command(label='Change background',command=bindFn(open_settings,desktops,args=['--cfg','background']));
-
-    right_click_menu.add_separator();
-    right_click_menu.add_command(label="Display Settings",command=bindFn(open_settings,desktops,args=['--cfg','display']));
-    right_click_menu.add_command(label="Desktop Symbol Settings");
-    right_click_menu.add_separator();
-    right_click_menu.add_cascade(label="Power",menu=power_menu);
-    def desktop_clicked(event):
-        global desktop_force_show;
-        #after that we would usually check whats near the click point and if its a shortcut we open it
-        desktop_stacking_order_override(mainwin)
-    ##end
-    def on_desktop_focus(event):
-        global desktop_force_show;
-        desktop_stacking_order_override(mainwin)
-    ##end
-    def desktop_back_if_not_shown(event):
-        mainwin.lower();
-    ##end
-    def dock_btn_hover(event):
-        desktop.itemconfig(dock_btn,image=dock_hover_img);  
-        desktop.config(cursor="hand2");
-        desktop.update();
-    ##end
-    def dock_btn_hover_leave(event):
-        desktop.itemconfig(dock_btn,image=dock_img);
-        desktop.config(cursor="");
-        desktop.update();
-    ##end
-    global debounce,dock_shown,opendb2;
-    debounce=False;
-    opendb2=False;
-    dock_shown=False;
-    def toggle_dock():
-        global dock_shown,opendb2,desktop_force_show;
-        if not opendb2:
-            opendb2=True;
-            if dock_shown:
-                dock_shown=False;
-                for i in range(dockheight):
-                    if conf["Appearance"]["dock_orientation"]=="horizontal":
-                        dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-(dockheight-i)}");
-                    else:
-                        dock.geometry(f"{dwidth}x{dheight}+{0-i}+{doffset}");
-                    ##endif
-                    mainwin.update();
-                    dock.update();
-                    if not desktop_force_show:
-                        mainwin.attributes('-topmost',0);
-                    ##endif
-                ##end
-            else:
-                dock_shown=True;
-                for i in range(dockheight):
-                    if conf["Appearance"]["dock_orientation"]=="horizontal":
-                        dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-i}");
-                    else:
-                        dock.geometry(f"{dwidth}x{dheight}+{0-(dockheight-i)}+0");
-                    ##endif
-                    mainwin.update();
-                    dock.update();
-                    if not desktop_force_show:
-                        mainwin.attributes('-topmost',0);
-                    ##endif
-                ##end
-            ##endif
-            opendb2=False;
-        ##endif
-    ##end
-    def dock_btn_click(event):
-        global debounce;
-        if debounce!=True:
-            desktop.itemconfig(dock_btn,image=dock_click_img);
-            debounce=True;
-            toggle=linux.task.Thread(target=toggle_dock);
-            toggle.start();
-            mainwin.lower();
-            linux.time.sleep(.1);
-            debounce=False;
-            desktop.itemconfig(dock_btn,image=dock_hover_img);
-        ##endif
-    ##end
-    def dash_btn_click(event):
-        pass;
-    ##end
-    def rc_menu_fn(event):
-        right_click_menu.tk_popup(event.x_root,event.y_root);
-        right_click_menu.focus_force();
-    ##end
-    dock_btn=desktop.create_image(0,canvasheight,image=dock_img,anchor=ui.SW);
-    dwidth=0;
-    dheight=0;
-    doffset=48;
-    geom1=True;
-    if conf["Appearance"]["dock_orientation"]=="horizontal":
-        dwidth=canvaswidth-96;
-        dheight=dockheight;
-        doffset=48;
-    ##endif
-    if conf["Appearance"]["dock_orientation"]=="vertical":
-        dwidth=dockheight;
-        dheight=canvasheight-48;
-        doffset=0;
-        geom1=False;
-    ##endif
-    global dock;
-    dock=Dock(desktop,desktop,bg='#333',width=dheight,height=dheight);
-    dock.retrieve_pinned();
-    dock.update();
-    if geom1:
-        dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-dockheight}");
-    else:
-        dock.geometry(f"{dwidth}x{dheight}+0+{doffset}");
-    ##endif
-    dash_btn=dock.canvas.create_image(0,0,image=dash_img,anchor=ui.NW);
-    def reload_desk():
-        global dock;
-        dock.destroy();
-        # Fetch updated configuration
-        homedir = linux.os.path.expanduser("~");
-        conf = linux.read_conf(homedir + "/pyde/main.conf");
-        # Determine canvas dimensions
-        #canvaswidth = self.winfo_width();
-        #canvasheight = self.winfo_height();
-        # Initialize variables
-        dockheight=int(conf["Dock"]["icon_size"] if conf["Dock"]["icon_size"] else 48);
-        dwidth, dheight, doffset = 0, 0, dockheight;
-        geom1 = True;  # Determine geometry orientation
-        # Adjust dock dimensions based on configuration
-        if conf["Appearance"]["dock_orientation"] == "horizontal":
-            dwidth = canvaswidth - 96;
-            dheight = dockheight;
-            doffset = 48;
-        elif conf["Appearance"]["dock_orientation"] == "vertical":
-            dwidth = dockheight;
-            dheight = canvasheight - 48;
-            doffset = 0;
-            geom1 = False;
-        ##endif
-        # Create a new Dock instance
-        dock = Dock(desktop, desktop, bg='#333', width=dwidth, height=dheight);
-        # Retrieve pinned apps and reload dock state
-        dock.retrieve_pinned();
-        dock.reload();  # Call the reload method to refresh dock contents
-        # Set dock geometry
-        if geom1:
-            dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-dheight}");
-        else:
-            dock.geometry(f"{dwidth}x{dheight}+0+{doffset}");
-        ##end
-        # Update the desktop appearance
-        dock_handler(dock,desktop);
-        dock.update();
-    ##end
-    right_click_menu.add_command(label="Reload Desktop",command=reload_desk);
-    desktop.tag_bind(dock_btn,'<Button-1>',dock_btn_click);
-    desktop.tag_bind(dock_btn,'<Enter>',dock_btn_hover);
-    desktop.tag_bind(dock_btn,'<Leave>',dock_btn_hover_leave);
-    desktop.bind('<Button-1>',bindFn(desktop_clicked));
-    desktop.bind('<Button-3>',bindFn(rc_menu_fn));
-    desktop.bind('<FocusIn>',bindFn(on_desktop_focus));
-    mainwin.bind('<FocusIn>',bindFn(on_desktop_focus));
-    dock.bind('<FocusIn>',bindFn(on_desktop_focus));
-    dock.bind('<Button-1>',bindFn(on_desktop_focus));
-    dock_handler(dock,desktop);
+    mainwin.destroy();
+    desktop,mainwin=new_desktop();
 ##end
 global dash_active,dash_canvas,dash_objects,opendb,thisdir;
 thisdir=linux.os.path.dirname(linux.os.path.realpath(__file__));
