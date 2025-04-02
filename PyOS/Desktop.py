@@ -404,6 +404,7 @@ class Desktop(ui.Canvas):
         ui.Canvas.__init__(self,master,cnf,*a,**kwargs);
         self.background_image=None
         self.currentBackground="";
+        self.root=master;
     ##end
     def set_background(self,img):
         if (self.background_image!=None):
@@ -418,7 +419,7 @@ class Desktop(ui.Canvas):
             self.itemconfig(self.background_image,image=bgimg);
         else:
             self.currentBackground=img;
-            self.background_image=com.create_bg_img(mainwin,self,img);
+            self.background_image=com.create_bg_img(self.root,self,img);
         ##endif
         self.update();
     ##end
