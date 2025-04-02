@@ -394,7 +394,6 @@ desktop_force_show=False;
 class DesktopWin(ui.Window):
     def __init__(self,screenName=None,width=400,height=300,title="Window",icon=None,**kwargs):
         ui.Window.__init__(self,screenName=screenName,width=width,height=height,title=title,icon=icon,**kwargs);
-        
     ##end
 ##end
 
