@@ -446,7 +446,6 @@ def new_desktop(show_dock=True,screenname=None):
     #Create the desktop
     desktop=Desktop(newroot,bg='#333');
     desktop.place(relx=.5,rely=.5,relwidth=1,relheight=1,anchor=ui.CENTER);
-    desktop.update();
     theimg=conf["Main"]["background"];
     desktop.set_background(theimg);
     desktops.append(desktop);
@@ -556,7 +555,7 @@ def new_desktop(show_dock=True,screenname=None):
             debounce=True;
             toggle=linux.task.Thread(target=toggle_dock);
             toggle.start();
-            mainwin.lower();
+            newroot.lower();
             linux.time.sleep(.1);
             debounce=False;
             desktop.itemconfig(dock_btn,image=dock_hover_img);
@@ -634,6 +633,7 @@ def new_desktop(show_dock=True,screenname=None):
         dock_handler(dock,desktop);
         dock.update();
     ##end
+    desktop.update();
     right_click_menu.add_command(label="Reload Desktop",command=reload_desk);
     desktop.tag_bind(dock_btn,'<Button-1>',dock_btn_click);
     desktop.tag_bind(dock_btn,'<Enter>',dock_btn_hover);
