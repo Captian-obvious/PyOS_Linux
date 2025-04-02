@@ -368,7 +368,7 @@ def authorize(main,cfg,callback):
     draw_usr(1);
     main.mainloop();
 ##end
-def set__current_window(win):
+def set_current_window(win):
     global main;
     main=win;
 ##end
