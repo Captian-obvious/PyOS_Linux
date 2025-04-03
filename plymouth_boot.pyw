@@ -81,7 +81,11 @@ def do_splash(is_for_reboot=False,mode="boot"):
     root.attributes('-topmost',0);
     root.bootIcon=icon=tk.PhotoImage(master=root,file='PyOS/assets/BootLogo.png');
     img=tk.Label(root,text='',font=('Ubuntu',20),fg='#fff',bg='#333',height='128px',width='128px',image=icon);
-    img.place(relx=.5,rely=.5,anchor=tk.CENTER);
+    if root.winfo_screenheight()<480:
+        img.place(relx=.5,rely=.4,anchor=tk.CENTER);
+    else:
+        img.place(relx=.5,rely=.5,anchor=tk.CENTER);
+    ##endif
     root.update();
     # count=0;
     # for i in range(0,30):
