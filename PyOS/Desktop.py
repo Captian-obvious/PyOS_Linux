@@ -857,7 +857,7 @@ class Dock(ui.Toplevel):
                 self.add_icon(
                     icon_path=icon["icon_path"],
                     name=icon["name"],
-                    appid=icon["appid"],
+                    appid=icon["app_id"],
                     exec=icon["exec"],
                     isPinned=icon["isPinned"],
                     pid=icon["pid"],
