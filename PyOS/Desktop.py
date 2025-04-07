@@ -622,9 +622,9 @@ def new_desktop(show_dock=True,screenname=None):
         ##endif
         # Create a new Dock instance
         dock = Dock(desktop, desktop, bg='#333', width=dwidth, height=dheight);
-        dock.icons=dock_icons_to_readd;
         # Retrieve pinned apps and reload dock state
         dock.retrieve_pinned();
+        dock.icons=dock_icons_to_readd;
         dock.reload();  # Call the reload method to refresh dock contents
         # Set dock geometry
         if geom1:
