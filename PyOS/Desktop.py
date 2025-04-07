@@ -597,7 +597,7 @@ def new_desktop(show_dock=True,screenname=None):
     dash_btn=dock.canvas.create_image(0,0,image=dash_img,anchor=ui.NW);
     def reload_desk():
         global dock;
-        dock_icons_to_readd=dock.icons();
+        dock_icons_to_readd=dock.icons;
         dock.destroy();
         # Fetch updated configuration
         homedir = linux.os.path.expanduser("~");
