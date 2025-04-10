@@ -400,11 +400,12 @@ class DesktopWin(ui.Window):
 ##end
 
 class Desktop(ui.Canvas):
-    def __init__(self,master,cnf={},*a,**kwargs):
+    def __init__(self,master,cnf={},screenName=None,*a,**kwargs):
         ui.Canvas.__init__(self,master,cnf,*a,**kwargs);
         self.background_image=None
         self.currentBackground="";
         self.root=master;
+        self.Screen=screenName;
     ##end
     def set_background(self,img):
         if (self.background_image!=None):
@@ -445,7 +446,7 @@ def new_desktop(show_dock=True,screenname=None):
     homedir=linux.os.path.expanduser("~");
     conf=linux.read_conf(homedir+"/pyde/main.conf");
     #Create the desktop
-    desktop=Desktop(newroot,bg='#333');
+    desktop=Desktop(newroot,screenName=screenname,bg='#333');
     desktop.place(relx=.5,rely=.5,relwidth=1,relheight=1,anchor=ui.CENTER);
     theimg=conf["Main"]["background"];
     desktop.set_background(theimg);
@@ -680,6 +681,11 @@ def goto_desktop():
     mainwin.destroy();
     desktop,mainwin=new_desktop();
     lib_main.set_current_window(mainwin);
+    for i in range(len(active_screens)):
+        if (active_screens[i]!=desktops[0].Screen):
+            new_desktop(True,active_screens[i]);
+        ##endif
+    ##end
 ##end
 global dash_active,dash_canvas,dash_objects,opendb,thisdir;
 thisdir=linux.os.path.dirname(linux.os.path.realpath(__file__));
