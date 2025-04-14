@@ -1,4 +1,4 @@
-<h1>I will allow contributions, Howver they will be reviewed</h1>
+<h1>I will allow contributions, However they will be reviewed</h1>
 <h2>There are a few things you may not request to change, for example:</h2>
 <ul>
     <li>You may not tell me to remove the python theme, You can ask for it to be changed though.</li>
