@@ -14,8 +14,4 @@ currently being supported with security updates.
 
 ## Reporting a Vulnerability
 
-Use this section to tell people how to report a vulnerability.
-
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+If a vulnerability is found, use the issue template "Bug Report" and give it a title (ex. VULN (ver) (identify it)) and put in its content a brief explanation on what the vulnerability is and it will be patched promptly
