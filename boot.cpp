@@ -15,11 +15,21 @@ void print_warn(std::string output) {
 // This function is the entry point of the bootloader. It checks for the existence of the BOOTMGR.py script,
 // constructs the command to run it using the system's Python interpreter, and executes it.
 // It also handles the "--debug" argument to enable debug mode.
+// If the "--recover" argument is passed, it enters recovery mode instead.
+// The recovery mode is not implemented yet, but a placeholder is provided for future development.
 int main(int argc, char** argv) {
     const char *envPath = "/usr/bin/env";
     const char *pythonCmd = "python";
     const char *scriptPath = "./BOOTMGR.py";
     bool debugMode = false;
+    bool recoveryMode = false;
+    // Check for "--recover" argument
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "--recover") == 0) {
+            recoveryMode = true;
+            break;
+        };
+    };
     // Check for "--debug" argument
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--debug") == 0) {
@@ -27,19 +37,26 @@ int main(int argc, char** argv) {
             break;
         };
     };
-    // Verify BOOTMGR.py exists
-    if (access(scriptPath, F_OK) != 0) {
-        print_err("BOOTMGR.py not found!");
+    if (!recoveryMode){
+        // Verify BOOTMGR.py exists
+        if (access(scriptPath, F_OK) != 0) {
+            print_err("BOOTMGR.py not found!");
+            return 1;
+        };
+        // Construct arguments
+        char *args[] = {const_cast<char*>(envPath), const_cast<char*>(pythonCmd), const_cast<char*>(scriptPath), nullptr};
+        if (debugMode) {
+            args[3] = const_cast<char*>("--debug");
+            args[4] = nullptr;
+            print_warn("Debug mode is enabled, this is not recommended for production use. (--debug)");
+        };
+        execvp(args[0], args);
+        print_err("Failed to run bootloader! Error: " + std::string(strerror(errno)));
         return 1;
+    }else{
+        // Recovery mode
+        print_warn("Entering recovery setup (--recover)");
+        // TODO: Add recovery mode code here
+        return 0;
     };
-    // Construct arguments
-    char *args[] = {const_cast<char*>(envPath), const_cast<char*>(pythonCmd), const_cast<char*>(scriptPath), nullptr};
-    if (debugMode) {
-        args[3] = const_cast<char*>("--debug");
-        args[4] = nullptr;
-        print_warn("Debug mode is enabled, this is not recommended for production use. (--debug)");
-    };
-    execvp(args[0], args);
-    print_err("Failed to run bootloader! Error: " + std::string(strerror(errno)));
-    return 1;
 };
