@@ -1,6 +1,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <string>
+#include <cstring>
 
 void print_err(std::string output) {
     std::cout << "\033[1;31mPyBoot: " << output << "\033[0m" << std::endl; // red
