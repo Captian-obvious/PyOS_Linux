@@ -23,9 +23,9 @@ int main(int argc, char** argv) {
     const char *scriptPath = "./BOOTMGR.py";
     bool debugMode = false;
     bool recoveryMode = false;
-    // Check for "--recover" argument
+    // Check for "--recovery" argument
     for (int i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "--recover") == 0) {
+        if (strcmp(argv[i], "--recovery") == 0) {
             recoveryMode = true;
             break;
         };
@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
         return 1;
     }else{
         // Recovery mode
-        print_warn("Entering recovery setup (--recover)");
+        print_warn("Entering recovery setup (--recovery)");
         // TODO: Add recovery mode code here
         return 0;
     };
