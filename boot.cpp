@@ -3,11 +3,11 @@
 #include <string>
 #include <cerrno>
 #include <cstring>
-
+// Main and helper functions
+// This is a simple bootloader that runs a Python script (BOOTMGR.py) using the system's Python interpreter.
 void print_err(std::string output) {
     std::cout << "\033[1;31mPyBoot: " << output << "\033[0m" << std::endl; // red
 };
-
 void print_warn(std::string output) {
     std::cout << "\033[1;33mPyBoot: " << output << "\033[0m" << std::endl; // yellow
 };
