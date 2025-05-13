@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
         return 1;
     };
     // Construct arguments
-     char *args[] = {const_cast<char*>(envPath), const_cast<char*>(pythonCmd), const_cast<char*>(scriptPath), nullptr};
+    char *args[] = {const_cast<char*>(envPath), const_cast<char*>(pythonCmd), const_cast<char*>(scriptPath), nullptr};
     if (debugMode) {
         args[3] = const_cast<char*>("--debug");
         args[4] = nullptr;
