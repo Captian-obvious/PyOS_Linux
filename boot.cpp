@@ -11,6 +11,10 @@ void print_err(std::string output) {
 void print_warn(std::string output) {
     std::cout << "\033[1;33mPyBoot: " << output << "\033[0m" << std::endl; // yellow
 };
+// Where the magic happens
+// This function is the entry point of the bootloader. It checks for the existence of the BOOTMGR.py script,
+// constructs the command to run it using the system's Python interpreter, and executes it.
+// It also handles the "--debug" argument to enable debug mode.
 int main(int argc, char** argv) {
     const char *envPath = "/usr/bin/env";
     const char *pythonCmd = "python";
