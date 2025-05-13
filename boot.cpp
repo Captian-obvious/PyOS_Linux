@@ -8,6 +8,9 @@
 void print_err(std::string output) {
     std::cout << "\033[1;31mPyBoot: " << output << "\033[0m" << std::endl; // red
 };
+void print_info(std::string output) {
+    std::cout << "PyBoot: " << output << std::endl; // normal
+};
 void print_warn(std::string output) {
     std::cout << "\033[1;33mPyBoot: " << output << "\033[0m" << std::endl; // yellow
 };
@@ -56,7 +59,14 @@ int main(int argc, char** argv) {
     }else{
         // Recovery mode
         print_warn("Entering recovery setup (--recovery)");
-        // TODO: Add recovery mode code here
+        __recovery_ui();
         return 0;
     };
+};
+
+void __recovery_ui(){
+    print_info("Loading recovery mode...");
+    // TODO: Add recovery mode code here
+    print_warn("Recovery mode is not (fully) implemented yet.");
+    return;
 };
