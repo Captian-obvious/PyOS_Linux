@@ -1,6 +1,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <string>
+#include <cerrno>
 #include <cstring>
 
 void print_err(std::string output) {
@@ -35,6 +36,6 @@ int main(int argc, char** argv) {
         print_warn("Debug mode is enabled, this is not recommended for production use. (--debug)");
     };
     execvp(args[0], args);
-    print_err("Failed to run bootloader!");
+    print_err("Failed to run bootloader! Error: " + std::string(strerror(errno)));
     return 1;
 };
