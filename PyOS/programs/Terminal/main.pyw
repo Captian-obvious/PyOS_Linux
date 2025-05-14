@@ -1,7 +1,7 @@
 import tkinter as tk;
 import threading as task;
 from pyTerm import TerminalFrame;
-import os,sys;
+import os,sys,subprocess;
 thisdir=os.path.dirname(os.path.realpath(__file__));
 imported=False;
 
@@ -12,15 +12,12 @@ def main(argc,argv):
     ##endif
     imported=True;
     if argc<2:
-        print("Usage: python3 -m pyOS.programs.Terminal <exec_path>");
+        print(f"Usage: python {thisdir}/main.pyw <exec_path>");
         return;
     ##endif
     root=tk.Tk();
-    auth_user,ec=os.system('whoami'); # Get the current user (Exit code is not used)
-    if ec!=0:
-        print("Error: could not get the current user");
-        return;
-    ##endif
+    # Run the whoami command and capture the output
+    auth_user=subprocess.check_output("whoami",shell=True).decode().strip();
     exec_path=argv[1];
     if not os.path.exists(exec_path):
         print("Error: no such file or directory: "+exec_path);
