@@ -1,12 +1,31 @@
 import tkinter as tk;
 import threading as task;
-from .pyTerm import TerminalFrame;
+from pyTerm import TerminalFrame;
 import os,sys;
 thisdir=os.path.dirname(os.path.realpath(__file__));
 imported=False;
 
-def main(exec_path=None,auth_user=None):
+def main(argc,argv):
+    global imported;
+    if imported:
+        return;
+    ##endif
+    imported=True;
+    if argc<2:
+        print("Usage: python3 -m pyOS.programs.Terminal <exec_path>");
+        return;
+    ##endif
     root=tk.Tk();
+    auth_user,ec=os.system('whoami'); # Get the current user (Exit code is not used)
+    if ec!=0:
+        print("Error: could not get the current user");
+        return;
+    ##endif
+    exec_path=argv[1];
+    if not os.path.exists(exec_path):
+        print("Error: no such file or directory: "+exec_path);
+        return;
+    ##endif
     root.title('Terminal');
     root.geometry("640x480");
     root.focus_force();
@@ -21,3 +40,4 @@ def main(exec_path=None,auth_user=None):
     t.start();
     root.mainloop();
 ##end
+main(len(sys.argv),sys.argv);

@@ -4,7 +4,8 @@ from . import Filesystem as fs;
 from . import libCommon as com;
 ui=uiw.UI();
 #Live Boot Check
-global main,for_install,c_auth_user;
+global main,for_install,c_auth_user,thisdir;
+thisdir=linux.os.path.dirname(linux.os.path.realpath(__file__));
 main=0;
 c_auth_user=None;
 for_install=False;
@@ -241,10 +242,15 @@ def load():
     ##endif
 ##end
 def open_terminal(path=linux.os.getcwd()):
-    global c_auth_user;
+    global c_auth_user,thisdir;
     try:
-        from .programs import Terminal as term;
-        term.main(path,linux.usrndecode(c_auth_user['username']).decode('utf-8'));
+        if linux.os.name=="nt":
+            linux.runner.run(f"pythonw {thisdir}/programs/Terminal/main.pyw {path}");
+        else:
+            compilerThread=linux.task.Thread(target=run_application,args=([f"{thisdir}/programs/Terminal/main.pyw",path],""));
+            compilerThread.daemon=True;
+            compilerThread.start();
+        ##endif
     except Exception as err:
         uiw.print_info('Error: '+str(err));
     ##endtry
