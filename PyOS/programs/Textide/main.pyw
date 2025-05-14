@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os,sys,time;
 import tkinter as tk;
 import tkinter.ttk as ttk;

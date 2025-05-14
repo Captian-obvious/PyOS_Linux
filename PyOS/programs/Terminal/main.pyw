@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import tkinter as tk;
 import threading as task;
 from pyTerm import TerminalFrame;
