@@ -12,14 +12,10 @@ def main(argc,argv):
         return;
     ##endif
     imported=True;
-    if argc<2:
-        print(f"Usage: python {thisdir}/main.pyw <exec_path>");
-        return;
-    ##endif
     root=tk.Tk();
     # Run the whoami command and capture the output
     auth_user=subprocess.check_output("whoami",shell=True).decode().strip();
-    exec_path=argv[1];
+    exec_path=argv[1] if argc>1 else os.path.expanduser('~');
     if not os.path.exists(exec_path):
         print("Error: no such file or directory: "+exec_path);
         return;
