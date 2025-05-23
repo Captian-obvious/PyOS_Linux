@@ -3,6 +3,7 @@
 #include <string>
 #include <cerrno>
 #include <cstring>
+#include <ncurses.h>
 // Main and helper functions
 // This is a simple bootloader that runs a Python script (BOOTMGR.py) using the system's Python interpreter.
 void print_err(std::string output) {
@@ -67,6 +68,37 @@ int main(int argc, char** argv) {
 void __recovery_ui(){
     print_info("Loading recovery mode...");
     // TODO: Add recovery mode code here
-    print_warn("Recovery mode is not (fully) implemented yet.");
+    initscr();
+    cbreak();
+    noecho();
+    int choice = 0;
+    int ch;
+    const char *options[] = {"Recovery Mode", "Safe Mode", "Exit"};
+    int num_options = sizeof(options) / sizeof(options[0]);
+    bool in_reco_mode=true;
+    while (in_reco_mode) {
+        clear();
+        for (int i = 0; i < num_options; i++) {
+            if (i == choice)
+                attron(A_REVERSE);
+            mvprintw(5 + i, 10, options[i]);
+            if (i == choice)
+                attroff(A_REVERSE);
+        }
+        ch = getch();
+        switch (ch) {
+            case KEY_UP:
+                choice = (choice == 0) ? num_options - 1 : choice - 1;
+                break;
+            case KEY_DOWN:
+                choice = (choice == num_options - 1) ? 0 : choice + 1;
+                break;
+            case '\n': // ENTER key
+                endwin();
+                printf("Selected: %s\n", options[choice]);
+                in_reco_mode=false;
+        };
+    };
+    //print_warn("Recovery mode is not (fully) implemented yet.");
     return;
 };
