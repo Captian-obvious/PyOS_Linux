@@ -1,6 +1,6 @@
 <img src="./Logo.png"></img>
 # PyOS_Linux
-PyOS Linux (also known as PyNux) is a python-centered linux distribution designed to be lightweight, performant, and is written almost entirely in python..
+PyOS Linux (also known as PyNux) is a python-centered linux distribution designed to be lightweight, performant, and its desktop is written almost entirely in python.
 
 It is based on Kubuntu and uses KDE's Window manager along with a custom desktop environment called PyDE (Pynux Desktop Environment), The main features include:
 <ul>
