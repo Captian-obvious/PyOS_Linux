@@ -391,9 +391,9 @@ def restart(config):
             ##endif
         else:
             if linux.os.name=="nt":
-                linux.runner.run(['pythonw','plymouth_boot.pyw','--mode=shutdown ','--reboot']);
+                linux.runner.run(['pythonw','plymouth_boot.pyw','--mode=shutdown','--reboot']);
             else:
-                linux.runner.run(['./plymouth_boot.pyw','--mode=shutdown ','--reboot']);
+                linux.runner.run(['./plymouth_boot.pyw','--mode=shutdown','--reboot']);
             ##endif
         ##endif
     ##end
@@ -402,7 +402,7 @@ def restart(config):
         linux.write_cfg('PyOS/cfg/main.pycfg',config);
         linux.restart();
     ##end
-    restart_task=linux.task.Thread(target=restart_msg);
+    restart_task=linux.task.Thread(target=restart_fn);
     restart_task.start();
     main.destroy();
     restart_msg();
