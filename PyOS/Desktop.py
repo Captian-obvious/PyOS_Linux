@@ -43,6 +43,9 @@ def init(win,cfg,usr):
         ##endif
         linux.write_conf(homedir+"/pyde/main.conf",default_conf);
     ##endif
+    if not (linux.os.path.exists(homedir+"/Desktop")):
+        linux.os.mkdir(homedir+"/Dekstop");
+    ##endif
 ##end
 
 def welcome_to_PyOS(root):
