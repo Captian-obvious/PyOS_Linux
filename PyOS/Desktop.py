@@ -1144,6 +1144,7 @@ class Dash_Menu(ui.Canvas):
         preinstalled_path=thisdir+"/programs";
         self.add_icon("Files",thisdir+"/programs/Files/favicon.png",open_files);
         self.add_icon("Terminal",thisdir+"/programs/Terminal/fi_48x48.png",bindFn(lib_main.open_terminal));
+        self.add_icon("Textide",thisdir+"/programs/Textide/fi_48x48.png",bindFn(lib_main.run_application,""));
         linux.populate_dash(bindFn(self.add_icon));
         #self.add_icon('Firefox','/nix/store/gsbl1123dy7dil3vayj0w9irn0f2d4rf-firefox-124.0.2/share/icons/hicolor/48x48/apps/firefox.png','firefox');
     ##end

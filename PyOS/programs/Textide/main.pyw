@@ -1,6 +1,7 @@
 import configparser,json,os,platform,re,socket,sys,threading,time;
 import tkinter as tk;
 from tkinter import ttk;
+thisdir=os.path.dirname(os.path.realpath(__file__));
 def read_conf(path):
     conf=configparser.ConfigParser();
     conf.read(path);
@@ -313,4 +314,6 @@ class textide:
 app=textide();
 app.initialize();
 app.main_page();
+app.icon=icon=tk.PhotoImage('textide_icon',master=app.window,file=thisdir+'/favicon.png');
+app.window.iconphoto(True,icon);
 app.window.mainloop();
