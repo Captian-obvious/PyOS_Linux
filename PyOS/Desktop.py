@@ -385,6 +385,18 @@ def open_files(path=linux.os.getcwd()):
         uiw.print_info('Error: '+str(err));
     ##endtry
 ##end
+def open_textide(path=linux.os.getcwd()):
+    try:
+        if linux.os.name=="nt":
+            linux.runner.run(f"pythonw {thisdir}/programs/Textide/main.pyw {path}");
+        else:
+            compilerThread=linux.task.Thread(target=lib_main.run_application,args=([f"{thisdir}/programs/Files/main.pyw",path],""));
+            compilerThread.start();
+        ##endif
+    except Exception as err:
+        uiw.print_info('Error: '+str(err));
+    ##endtry
+##end
 def open_application(path,args): #Launch a non-builtin application using its path
     try:
         compilerThread=linux.task.Thread(target=lib_main.run_application,args=([path,*args],));
@@ -1144,7 +1156,7 @@ class Dash_Menu(ui.Canvas):
         preinstalled_path=thisdir+"/programs";
         self.add_icon("Files",thisdir+"/programs/Files/favicon.png",open_files);
         self.add_icon("Terminal",thisdir+"/programs/Terminal/fi_48x48.png",bindFn(lib_main.open_terminal));
-        self.add_icon("Textide",thisdir+"/programs/Textide/fi_48x48.png",bindFn(lib_main.run_application,""));
+        self.add_icon("Textide",thisdir+"/programs/Textide/fi_48x48.png",bindFn(open_textide));
         linux.populate_dash(bindFn(self.add_icon));
         #self.add_icon('Firefox','/nix/store/gsbl1123dy7dil3vayj0w9irn0f2d4rf-firefox-124.0.2/share/icons/hicolor/48x48/apps/firefox.png','firefox');
     ##end

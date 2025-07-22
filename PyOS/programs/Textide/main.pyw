@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import configparser,json,os,platform,re,socket,sys,threading,time;
 import tkinter as tk;
 from tkinter import ttk;
