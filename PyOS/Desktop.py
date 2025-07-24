@@ -44,7 +44,7 @@ def init(win,cfg,usr):
         linux.write_conf(homedir+"/pyde/main.conf",default_conf);
     ##endif
     if not (linux.os.path.exists(homedir+"/Desktop")):
-        linux.os.mkdir(homedir+"/Dekstop");
+        linux.os.mkdir(homedir+"/Desktop");
     ##endif
 ##end
 
@@ -390,7 +390,7 @@ def open_textide(path=linux.os.getcwd()):
         if linux.os.name=="nt":
             linux.runner.run(f"pythonw {thisdir}/programs/Textide/main.pyw {path}");
         else:
-            compilerThread=linux.task.Thread(target=lib_main.run_application,args=([f"{thisdir}/programs/Files/main.pyw",path],""));
+            compilerThread=linux.task.Thread(target=lib_main.run_application,args=([f"{thisdir}/programs/Textide/main.pyw",path],""));
             compilerThread.start();
         ##endif
     except Exception as err:
