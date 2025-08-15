@@ -170,6 +170,21 @@ class textide:
             });
         ##endif
     ##end
+    def show_context_menu(self,event):
+        self.context_menu.tk_popup(event.x_root, event.y_root);
+    ##end
+    def copy(self):
+        widget = self.window.focus_get();
+        widget.event_generate("<<Copy>>");
+    ##end
+    def paste(self):
+        widget = self.window.focus_get();
+        widget.event_generate("<<Paste>>");
+    ##end
+    def cut(self):
+        widget = self.window.focus_get();
+        widget.event_generate("<<Cut>>");
+    ##end
     def coming_soon_page(self):
         self.styles.theme_use("Light");
         frame=ttk.Frame(self.window,style="CS.TFrame");
@@ -187,6 +202,12 @@ class textide:
         self.notebook.bind("<Button-1>",self.on_tab_click);
         self.notebook.bind("<Double-1>",self.on_tab_double_click);
         self.create_ribbon();
+        self.context_menu=tk.Menu(app.window, tearoff=0);
+        self.context_menu.add_command(label="Cut", command=self.cut);
+        self.context_menu.add_command(label="Copy", command=self.copy);
+        self.context_menu.add_command(label="Paste", command=self.paste);
+        self.window.bind("<Button-3>", self.show_context_menu);
+        self.window.bind("<Control-Button-1>", self.show_context_menu);
         self.notebook.place(relx=0, rely=0.08, relwidth=1, relheight=0.92);
         frame0=self.add_tab();
     ##end
