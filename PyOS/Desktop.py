@@ -455,7 +455,7 @@ def open_settings(desktops,args):
 
 def new_desktop(show_dock=True,screenname=None):
     newroot=ui.Window(screenName=screenname);
-    newroot.setAttribute('fullscreen',True);
+    newroot.attributes('-fullscreen',True);
     newroot.update();
     global mainwin,config,desktop_force_show;
     homedir=linux.os.path.expanduser("~");
