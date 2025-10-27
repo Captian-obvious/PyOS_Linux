@@ -361,11 +361,6 @@ def startSessionAfterInit(IsLive=False):
     if (not IsLive):
         root.destroy();
         goto_desktop();
-        for i in range(len(active_screens)):
-            if (i>1):
-                new_desktop(active_screens[i-1]);
-            ##endif
-        ##end
         mainwin.mainloop();
     else:
         #Show the welcome message.
