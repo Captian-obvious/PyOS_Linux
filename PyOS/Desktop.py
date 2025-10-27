@@ -664,7 +664,6 @@ def new_desktop(show_dock=True,screenname=None):
     dock.bind('<FocusIn>',bindFn(on_desktop_focus));
     dock.bind('<Button-1>',bindFn(on_desktop_focus));
     dock_handler(dock,desktop);
-    newroot.setAttribute('fullscreen',True);
     return desktop,newroot;
 ##end
 
