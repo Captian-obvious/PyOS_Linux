@@ -461,8 +461,8 @@ def new_desktop(show_dock=True,screenname=None):
     theimg=conf["Main"]["background"];
     desktop.set_background(theimg);
     desktops.append(desktop);
-    canvaswidth=desktop.winfo_width();
-    canvasheight=desktop.winfo_height();
+    canvaswidth=newroot.winfo_width();
+    canvasheight=newroot.winfo_height();
     dockheight=int(conf["Dock"]["icon_size"] if conf["Dock"]["icon_size"] else 48);
     desktop.di=dock_img=com.ImageTk.PhotoImage(file=thisdir+'/assets/images/dock.png');
     desktop.dhi=dock_hover_img=com.ImageTk.PhotoImage(file=thisdir+'/assets/images/dock_hover.png');
