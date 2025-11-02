@@ -683,7 +683,7 @@ def get_tasks():
 
 def desktop_stacking_order_override(deskWin):
     deskWin.update();
-    time.sleep(.1);
+    linux.time.sleep(.1);
     if not desktop_force_show:
         deskWin.attributes('-topmost',0);
     ##endif
