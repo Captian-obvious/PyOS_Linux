@@ -34,6 +34,7 @@ def init(win,cfg,usr):
             "color":"#333",
             "theme":"dark",
             "icon_size":"48",
+            "extra_screens":True,
         }
     };
     homedir=linux.os.path.expanduser("~");
@@ -693,7 +694,7 @@ def goto_desktop():
     lib_main.set_current_window(mainwin);
     for i in range(len(active_screens)):
         if (active_screens[i]!=desktops[0].Screen):
-            new_desktop(True,active_screens[i]);
+            new_desktop(conf["Dock"]["extra_screens"],active_screens[i]);
         ##endif
     ##end
 ##end
