@@ -690,7 +690,7 @@ def goto_desktop():
     ##endtry
     #Create the desktop
     desktop,mainwin=new_desktop();
-    lib_main.set_current_window(mainwin);
+    #lib_main.set_current_window(mainwin);
     for i in range(len(active_screens)):
         if (active_screens[i]!=desktops[0].Screen):
             new_desktop(True,active_screens[i]);
