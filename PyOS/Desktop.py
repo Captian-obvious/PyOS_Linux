@@ -462,7 +462,7 @@ class Desktop(ui.Canvas):
             geom1 = False;
         ##endif
         # Create a new Dock instance
-        dock = Dock(desktop, desktop, bg='#333', width=dwidth, height=dheight);
+        dock = Dock(self, self, bg='#333', width=dwidth, height=dheight);
         # Retrieve pinned apps and reload dock state
         dock.retrieve_pinned();
         dock.icons=dock_icons_to_readd;
@@ -474,7 +474,7 @@ class Desktop(ui.Canvas):
             dock.geometry(f"{dwidth}x{dheight}+0+{doffset}");
         ##end
         # Update the desktop appearance
-        dock_handler(dock,desktop);
+        dock_handler(dock,self);
         dock.update();
         return dock;
     ##end
