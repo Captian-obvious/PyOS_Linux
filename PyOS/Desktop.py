@@ -435,6 +435,47 @@ class Desktop(ui.Canvas):
         ##endif
         self.update();
     ##end
+    def reload(self,dock):
+        dock_icons_to_readd=dock.icons;
+        dock.destroy();
+        # Fetch updated configuration
+        homedir = linux.os.path.expanduser("~");
+        conf = linux.read_conf(homedir + "/pyde/main.conf");
+        # Determine canvas dimensions
+        #canvaswidth = self.winfo_width();
+        #canvasheight = self.winfo_height();
+        # Initialize variables
+        dockheight=int(conf["Dock"]["icon_size"] if conf["Dock"]["icon_size"] else 48);
+        dwidth, dheight, doffset = 0, 0, dockheight;
+        geom1 = True;  # Determine geometry orientation
+        # Adjust dock dimensions based on configuration
+        if conf["Appearance"]["dock_orientation"] == "horizontal":
+            dwidth = canvaswidth - 96;
+            dheight = dockheight;
+            doffset = 48;
+        elif conf["Appearance"]["dock_orientation"] == "vertical":
+            dwidth = dockheight;
+            dheight = canvasheight - 48;
+            doffset = 0;
+            geom1 = False;
+        ##endif
+        # Create a new Dock instance
+        dock = Dock(desktop, desktop, bg='#333', width=dwidth, height=dheight);
+        # Retrieve pinned apps and reload dock state
+        dock.retrieve_pinned();
+        dock.icons=dock_icons_to_readd;
+        dock.reload();  # Call the reload method to refresh dock contents
+        # Set dock geometry
+        if geom1:
+            dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-dheight}");
+        else:
+            dock.geometry(f"{dwidth}x{dheight}+0+{doffset}");
+        ##end
+        # Update the desktop appearance
+        dock_handler(dock,desktop);
+        dock.update();
+        return dock;
+    ##end
 ##end
 desktops=[];
 def open_settings(desktops,args):
@@ -610,44 +651,7 @@ def new_desktop(show_dock=True,screenname=None):
     dash_btn=dock.canvas.create_image(0,0,image=dash_img,anchor=ui.NW);
     def reload_desk():
         global dock;
-        dock_icons_to_readd=dock.icons;
-        dock.destroy();
-        # Fetch updated configuration
-        homedir = linux.os.path.expanduser("~");
-        conf = linux.read_conf(homedir + "/pyde/main.conf");
-        # Determine canvas dimensions
-        #canvaswidth = self.winfo_width();
-        #canvasheight = self.winfo_height();
-        # Initialize variables
-        dockheight=int(conf["Dock"]["icon_size"] if conf["Dock"]["icon_size"] else 48);
-        dwidth, dheight, doffset = 0, 0, dockheight;
-        geom1 = True;  # Determine geometry orientation
-        # Adjust dock dimensions based on configuration
-        if conf["Appearance"]["dock_orientation"] == "horizontal":
-            dwidth = canvaswidth - 96;
-            dheight = dockheight;
-            doffset = 48;
-        elif conf["Appearance"]["dock_orientation"] == "vertical":
-            dwidth = dockheight;
-            dheight = canvasheight - 48;
-            doffset = 0;
-            geom1 = False;
-        ##endif
-        # Create a new Dock instance
-        dock = Dock(desktop, desktop, bg='#333', width=dwidth, height=dheight);
-        # Retrieve pinned apps and reload dock state
-        dock.retrieve_pinned();
-        dock.icons=dock_icons_to_readd;
-        dock.reload();  # Call the reload method to refresh dock contents
-        # Set dock geometry
-        if geom1:
-            dock.geometry(f"{dwidth}x{dheight}+{doffset}+{canvasheight-dheight}");
-        else:
-            dock.geometry(f"{dwidth}x{dheight}+0+{doffset}");
-        ##end
-        # Update the desktop appearance
-        dock_handler(dock,desktop);
-        dock.update();
+        desktop.reload(dock);
     ##end
     desktop.update();
     right_click_menu.add_command(label="Reload Desktop",command=reload_desk);
