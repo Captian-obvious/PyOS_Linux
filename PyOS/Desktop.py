@@ -360,6 +360,7 @@ def startSessionAfterInit(IsLive=False):
     root.update();
     if (not IsLive):
         root.destroy();
+        mainwin.destroy();
         goto_desktop();
         mainwin.mainloop();
     else:
@@ -688,7 +689,6 @@ def goto_desktop():
         uiw.print_info('Unable to get screens: '+str(err));
     ##endtry
     #Create the desktop
-    mainwin.destroy();
     desktop,mainwin=new_desktop();
     lib_main.set_current_window(mainwin);
     for i in range(len(active_screens)):
