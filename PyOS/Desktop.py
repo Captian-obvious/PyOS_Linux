@@ -438,6 +438,8 @@ class Desktop(ui.Canvas):
     def reload(self,dock):
         dock_icons_to_readd=dock.icons;
         dock.destroy();
+        canvaswidth=self.winfo_width();
+        canvasheight=self.winfo_height();
         # Fetch updated configuration
         homedir = linux.os.path.expanduser("~");
         conf = linux.read_conf(homedir + "/pyde/main.conf");
