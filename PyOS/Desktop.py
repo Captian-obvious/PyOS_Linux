@@ -457,12 +457,13 @@ def new_desktop(show_dock=True,screenname=None):
     conf=linux.read_conf(homedir+"/pyde/main.conf");
     #Create the desktop
     desktop=Desktop(newroot,screenName=screenname,bg='#333');
+    canvaswidth=newroot.winfo_width();
+    canvasheight=newroot.winfo_height();
+    print(canvaswidth,canvasheight);
     desktop.place(relx=.5,rely=.5,relwidth=1,relheight=1,anchor=ui.CENTER);
     theimg=conf["Main"]["background"];
     desktop.set_background(theimg);
     desktops.append(desktop);
-    canvaswidth=newroot.winfo_width();
-    canvasheight=newroot.winfo_height();
     dockheight=int(conf["Dock"]["icon_size"] if conf["Dock"]["icon_size"] else 48);
     desktop.di=dock_img=com.ImageTk.PhotoImage(file=thisdir+'/assets/images/dock.png');
     desktop.dhi=dock_hover_img=com.ImageTk.PhotoImage(file=thisdir+'/assets/images/dock_hover.png');
