@@ -651,7 +651,7 @@ def new_desktop(show_dock=True,screenname=None):
     dash_btn=dock.canvas.create_image(0,0,image=dash_img,anchor=ui.NW);
     def reload_desk():
         global dock;
-        desktop.reload(dock);
+        dock=desktop.reload(dock);
     ##end
     desktop.update();
     right_click_menu.add_command(label="Reload Desktop",command=reload_desk);
