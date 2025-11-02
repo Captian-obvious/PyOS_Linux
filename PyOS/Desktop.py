@@ -34,7 +34,7 @@ def init(win,cfg,usr):
             "color":"#333",
             "theme":"dark",
             "icon_size":"48",
-            "extra_screens":True,
+            "extra_screens":"true",
         }
     };
     homedir=linux.os.path.expanduser("~");
@@ -48,7 +48,13 @@ def init(win,cfg,usr):
         linux.os.mkdir(homedir+"/Desktop");
     ##endif
 ##end
-
+def string_to_bool(s:str):
+    if s=="true":
+        return True;
+    else:
+        return False;
+    ##endif
+##end
 def welcome_to_PyOS(root):
     global mainwin,config;
     #create a welcome message box with the text "Welcome to PyOS" and then (will continue)
@@ -677,7 +683,6 @@ def get_tasks():
 
 def desktop_stacking_order_override(deskWin):
     deskWin.update();
-    print("I got called!");
     time.sleep(.1);
     if not desktop_force_show:
         deskWin.attributes('-topmost',0);
@@ -702,7 +707,7 @@ def goto_desktop():
     lib_main.set_current_window(mainwin);
     for i in range(len(active_screens)):
         if (active_screens[i]!=desktops[0].Screen):
-            new_desktop(conf["Dock"]["extra_screens"],active_screens[i]);
+            new_desktop(string_to_bool(conf["Dock"]["extra_screens"]),active_screens[i]);
         ##endif
     ##end
 ##end
