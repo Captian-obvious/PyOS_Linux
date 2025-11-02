@@ -503,7 +503,7 @@ def new_desktop(show_dock=True,screenname=None):
     desktop=Desktop(newroot,screenName=screenname,bg='#333');
     canvaswidth=newroot.winfo_width();
     canvasheight=newroot.winfo_height();
-    print(canvaswidth,canvasheight);
+    print(canvasheight,canvaswidth);
     desktop.place(relx=.5,rely=.5,relwidth=1,relheight=1,anchor=ui.CENTER);
     theimg=conf["Main"]["background"];
     desktop.set_background(theimg);
