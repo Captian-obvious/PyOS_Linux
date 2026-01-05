@@ -365,14 +365,19 @@ def startSessionAfterInit(IsLive=False):
     root.place(relx=.5,rely=.5,relwidth=1,relheight=1,anchor=ui.CENTER);
     mainwin.update();
     root.update();
+    mainwin.destroy();
+    goto_desktop();
+    mainwin.mainloop();
+    """
     if (not IsLive):
         mainwin.destroy();
         goto_desktop();
         mainwin.mainloop();
     else:
         #Show the welcome message.
-        welcome_to_PyOS(root);
+        
     ##endif
+    """
 ##end
 # opens files app
 def open_files(path=linux.os.getcwd()):
