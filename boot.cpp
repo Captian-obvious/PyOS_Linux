@@ -100,6 +100,6 @@ void __recovery_ui(){
         };
     };
     */
-    print_warn("Recovery mode is not (fully) implemented yet.");
+    print_warn("Recovery mode is not (fully) implemented. (YET!)");
     return;
 };
